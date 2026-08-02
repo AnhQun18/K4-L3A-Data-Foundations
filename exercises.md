@@ -179,4 +179,5 @@ Tìm ít nhất **1 trường hợp lỗi (failure case)** trong quá trình so 
 
 - [ ] Vượt qua tất cả các bài kiểm thử (tests): `pytest tests/ -v`
 - [ ] Cập nhật thư mục `src/` (cá nhân)
-- [ ] Hoàn thành báo cáo (`report/REPORT.md` — 1 file/sinh viên)
+- [ ] Hoàn thành báo cáo nhóm (`report/REPORT_NHOM.md` — 1 file/nhóm)
+- [ ] Hoàn thành báo cáo cá nhân (`report/REPORT_CANHAN.md` — 1 file/sinh viên)

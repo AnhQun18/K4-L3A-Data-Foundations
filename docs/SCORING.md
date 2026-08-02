@@ -1,6 +1,6 @@
 # Thang Điểm (Scoring Rubric) Lab 7: Embedding & Vector Store
 
-Mỗi sinh viên nộp **một báo cáo duy nhất** (`report/REPORT.md`) bao gồm cả phần cá nhân và phần nhóm.
+Nhóm nộp **1 báo cáo nhóm** (`report/REPORT_NHOM.md` — phần nhóm, 40 điểm) và **mỗi sinh viên nộp 1 báo cáo cá nhân** (`report/REPORT_CANHAN.md` — phần cá nhân, 60 điểm).
 
 > Tham khảo thêm `docs/EVALUATION.md` để xem các tiêu chí (metric) và góc nhìn đánh giá chất lượng truy xuất (retrieval quality).
 
@@ -43,7 +43,7 @@ Nhóm thống nhất **5 câu hỏi đánh giá (benchmark queries)** kèm **câ
 **Tổng = Cá Nhân (60) + Nhóm (40) = 100 Điểm Tối Đa**
 
 > [!IMPORTANT]
-> **Một báo cáo, hai góc nhìn**: Phần nhóm (lựa chọn tài liệu, chiến lược) sẽ giống nhau giữa các thành viên. Phần cá nhân (hướng tiếp cận, kết quả, phản ngẫm) phải khác nhau vì mỗi người lập trình riêng.
+> **Hai báo cáo, hai góc nhìn**: Báo cáo nhóm (`REPORT_NHOM.md`: lựa chọn tài liệu, chiến lược, câu hỏi đánh giá, demo) nộp chung 1 bản/nhóm. Báo cáo cá nhân (`REPORT_CANHAN.md`: hướng tiếp cận, kết quả, phản ngẫm) mỗi người nộp riêng vì mỗi người lập trình khác nhau.
 
 > [!IMPORTANT]
 > **Chiến lược (Strategy) > Hiệu suất (Performance)**: 15 điểm cho thiết kế chiến lược so với 10 điểm cho chất lượng truy xuất. Chúng tôi đánh giá cao khả năng **suy nghĩ và giải thích** hơn là điểm số thuần tuý.

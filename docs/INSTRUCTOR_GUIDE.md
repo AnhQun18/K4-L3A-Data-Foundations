@@ -1,6 +1,6 @@
 # Hướng dẫn Giảng viên (Instructor Guide): Lab 7 - Nền tảng Dữ liệu (Data Foundations): Embedding & Vector Store
 
-Hướng dẫn này dành cho giảng viên để dẫn dắt buổi lab 4.5 giờ. Lab chia làm 2 giai đoạn (phase): **cá nhân** (lập trình) và **nhóm** (so sánh chiến lược, học hỏi lẫn nhau).
+Hướng dẫn này dành cho giảng viên để dẫn dắt buổi lab 4 giờ. Lab chia làm 2 giai đoạn (phase): **cá nhân** (lập trình) và **nhóm** (so sánh chiến lược, học hỏi lẫn nhau).
 
 > Chuẩn môi trường: Python **3.11.x**. Phần lõi (core) chỉ dùng `requirements.txt`; không yêu cầu PyTorch, API key hay GPU.
 
@@ -50,11 +50,11 @@ PY
 
 - Khuyến nghị giảng viên nói rõ ngay từ đầu: **“Local/OpenAI embedder là điểm cộng (bonus) / tùy chọn (optional), không phải điều kiện để hoàn thành lab.”**
 - Khi có sinh viên máy yếu, mạng chậm, không có API key, hoặc không muốn tải mô hình, hãy hướng họ tiếp tục với `_mock_embed` để tránh bị kẹt ở phần thiết lập (setup).
-- Thư mục `src_w_solution/` là bài giải tham khảo (reference solution) dành cho giảng viên / người bảo trì (maintainer). Không phân phối thư mục này cho sinh viên.
+- Bài giải tham khảo (reference solution) dành cho giảng viên / người bảo trì (maintainer): repo master **`Day-07-Lab-Data-Foundations/src/`** đã hoàn thiện toàn bộ TODO — chạy `pytest tests/` cho **42/42** để đối chiếu khi chấm. Không phân phối bản giải này cho sinh viên. Nếu muốn đặt đáp án ngay trong repo này cho tiện so sánh, để vào thư mục `src_w_solution/` (đã có sẵn trong `.gitignore` nên không bị commit nhầm).
 
 ---
 
-## Tiến trình (Timeline) & Luồng hoạt động (Flow) (4.5 giờ)
+## Tiến trình (Timeline) & Luồng hoạt động (Flow) (4 giờ)
 
 ### Giai đoạn 1: Chuẩn bị tài liệu (Document Preparation) (30 phút, 0:00–0:30)
 
@@ -85,7 +85,7 @@ PY
 - **Điểm kiểm tra 1 (Checkpoint 1) (1:00)**: "Ai đã vượt qua phần chunking (`TestSentenceChunker`, `TestRecursiveChunker`)?" — giải thích lại nếu < 50% lớp làm được
 - **Điểm kiểm tra 2 (Checkpoint 2) (1:30)**: "Ai đã vượt qua TestEmbeddingStore?" — hỗ trợ sửa lỗi (debug) nếu cần
 
-### Giai đoạn 3: Thiết kế chiến lược (Strategy Design) (60 phút, 2:00–3:00)
+### Giai đoạn 3: Thiết kế chiến lược (Strategy Design) (45 phút, 2:00–2:45)
 
 **Hoạt động:**
 - Nhóm thống nhất **5 câu hỏi đánh giá (benchmark queries) + câu trả lời chuẩn (gold answers)**
@@ -98,9 +98,9 @@ PY
 - Kiểm tra các câu hỏi đánh giá: "Các câu hỏi có đủ đa dạng không?"
 - Nhắc nhở: câu trả lời chuẩn phải cụ thể, có thể kiểm chứng (verifiable)
 
-**Điểm kiểm tra (Checkpoint) (2:45):** Mỗi nhóm phải có sẵn 5 câu hỏi đánh giá + câu trả lời chuẩn
+**Điểm kiểm tra (Checkpoint) (2:40):** Mỗi nhóm phải có sẵn 5 câu hỏi đánh giá + câu trả lời chuẩn
 
-### Giai đoạn 4: So Sánh & Thảo Luận Trong Nhóm (30 phút, 3:00–3:30)
+### Giai đoạn 4: So Sánh & Thảo Luận Trong Nhóm (30 phút, 2:45–3:15)
 
 **Hoạt động:**
 1. Mỗi thành viên chạy 5 câu hỏi đánh giá với chiến lược riêng (10 phút)
@@ -113,9 +113,9 @@ PY
 - Đi quanh lớp, đặt câu hỏi: "Chiến lược nào thắng? Các bạn có giải thích được tại sao không?"
 - Thu thập 2-3 phát hiện hay từ các nhóm để sử dụng trong phần thảo luận chung
 
-### Giai đoạn 5: Thuyết trình (Demo) & Thảo Luận Liên Nhóm (60 phút, 3:30–4:30)
+### Giai đoạn 5: Thuyết trình (Demo) & Thảo Luận Liên Nhóm (45 phút, 3:15–4:00)
 
-**Định dạng thuyết trình (8-10 phút/nhóm):**
+**Định dạng thuyết trình (6-8 phút/nhóm):**
 1. Giới thiệu chủ đề (domain) + bộ tài liệu (1 phút)
 2. Mỗi thành viên tóm tắt chiến lược của mình (2 phút)
 3. So sánh: chiến lược nào thắng trên bộ dữ liệu này? Tại sao? (3 phút)
@@ -129,7 +129,7 @@ PY
 
 **Đúc kết của giảng viên (Wrap-up) (5 phút):**
 - Bài học cốt lõi: "Cùng tài liệu, nhưng chiến lược khác nhau → kết quả rất khác nhau. Hiểu rõ tại sao lại quan trọng hơn là chỉ chạy được code."
-- Nhắc nhở: mỗi sinh viên nộp 1 bản báo cáo (phần làm việc nhóm giống nhau, phần cá nhân + chiến lược khác nhau)
+- Nhắc nhở: mỗi nhóm nộp 1 `REPORT_NHOM.md` (chung) + mỗi sinh viên nộp 1 `REPORT_CANHAN.md` (riêng)
 - Kết nối với Ngày 8 (Quy trình RAG hoàn chỉnh)
 
 ---
