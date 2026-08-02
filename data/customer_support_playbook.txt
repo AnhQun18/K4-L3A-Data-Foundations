@@ -1,11 +1,11 @@
-Customer Support Playbook for the AI Knowledge Assistant
+Sổ tay Hỗ trợ Khách hàng cho Trợ lý Tri thức AI (Customer Support Playbook)
 
-The support team uses the knowledge assistant to answer repetitive questions about account setup, billing errors, password recovery, and service limitations. To make retrieval useful, the indexed documents should contain clear issue descriptions, step-by-step resolutions, escalation criteria, and references to the owning team.
+Nhóm hỗ trợ sử dụng trợ lý tri thức để trả lời các câu hỏi lặp đi lặp lại về thiết lập tài khoản, lỗi thanh toán, khôi phục mật khẩu, và giới hạn dịch vụ. Để việc truy xuất hiệu quả, các tài liệu được đưa vào (indexed) phải chứa mô tả sự cố rõ ràng, các bước giải quyết chi tiết, tiêu chí chuyển tuyến (escalation criteria), và thông tin liên hệ của nhóm chịu trách nhiệm.
 
-When writing support content, authors should avoid vague statements such as "check the settings" or "contact engineering if needed." Instead, each article should specify the exact page, button, or log source that an agent should inspect. Specific language makes chunks more useful because the retriever can match concrete troubleshooting terms found in the user's question.
+Khi viết nội dung hỗ trợ, các tác giả nên tránh các câu nói chung chung như "kiểm tra cài đặt" hoặc "liên hệ kỹ thuật nếu cần." Thay vào đó, mỗi bài viết nên chỉ định trang, nút bấm, hoặc nguồn log cụ thể mà một tổng đài viên cần xem xét. Ngôn ngữ cụ thể làm cho các đoạn văn (chunks) hữu ích hơn vì công cụ tìm kiếm (retriever) có thể khớp các thuật ngữ xử lý sự cố cụ thể có trong câu hỏi của người dùng.
 
-Metadata should distinguish between customer-facing articles, internal support-only notes, and engineering-only incident documents. If these sources are mixed together without filtering, the assistant may surface internal-only procedures to the wrong audience or retrieve engineering details when the user only needs a short customer-safe explanation.
+Metadata cần phân biệt giữa các bài viết dành cho khách hàng, ghi chú nội bộ chỉ dành cho hỗ trợ, và tài liệu sự cố chỉ dành cho kỹ sư. Nếu các nguồn này bị trộn lẫn mà không có bộ lọc, trợ lý có thể hiển thị các quy trình nội bộ cho sai đối tượng hoặc truy xuất chi tiết kỹ thuật khi người dùng chỉ cần một lời giải thích ngắn gọn, an toàn.
 
-A high-quality support assistant should also recognize when retrieval is insufficient. For example, if no document explains a newly introduced billing issue, the system should recommend escalation instead of improvising a risky answer. In practice, honest uncertainty is better than a polished but incorrect response.
+Một trợ lý hỗ trợ chất lượng cao cũng cần nhận ra khi nào việc truy xuất là không đủ. Ví dụ, nếu không có tài liệu nào giải thích một sự cố thanh toán mới phát sinh, hệ thống nên đề xuất chuyển tuyến thay vì tự bịa ra một câu trả lời rủi ro. Trong thực tế, sự không chắc chắn trung thực còn tốt hơn là một phản hồi trau chuốt nhưng không chính xác.
 
-To maintain reliability, the support operations team should review failed queries every week. Those reviews often reveal missing documents, poor chunk boundaries, or stale articles that still rank highly because their language overlaps with common queries.
+Để duy trì độ tin cậy, nhóm vận hành hỗ trợ nên xem lại các câu hỏi thất bại hàng tuần. Những đợt xem xét đó thường tiết lộ các tài liệu bị thiếu, ranh giới chia nhỏ (chunk) kém, hoặc các bài viết cũ kỹ nhưng vẫn được xếp hạng cao vì ngôn ngữ của chúng trùng lặp với các câu hỏi phổ biến.

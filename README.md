@@ -1,29 +1,29 @@
 # K3 — Ngày 7: Nền Tảng Dữ Liệu, Embedding & Vector Store
 
-> Bản K3 của Lab 07. Hướng dẫn Codelabs để upload nằm tại `../codelabs/day7-lab-data-foundations.md`; yêu cầu Phase 2 riêng xem [K3_VARIANT.md](K3_VARIANT.md).
+> Bản K3 của Lab 07. Hướng dẫn Codelabs để tải lên nằm tại `../codelabs/day7-lab-data-foundations.md`; yêu cầu Giai đoạn 2 riêng xem [K3_VARIANT.md](K3_VARIANT.md).
 
 ---
 
 ## Mục Tiêu
 
-Sau lab này, bạn cần có thể:
-- Giải thích cosine similarity và dự đoán điểm tương đồng giữa các văn bản
-- Triển khai 3 chiến lược chunking và so sánh ưu nhược điểm
-- Xây dựng vector store với search, filter, và delete
-- Kết nối knowledge base với agent qua RAG pattern
-- Chỉ ra khi nào retrieval giúp ích và khi nào nó thất bại
+Sau bài thực hành (lab) này, bạn cần có thể:
+- Giải thích độ tương tự cosine (cosine similarity) và dự đoán điểm tương đồng giữa các văn bản
+- Triển khai 3 chiến lược chia nhỏ (chunking) và so sánh ưu nhược điểm
+- Xây dựng kho lưu trữ vector (vector store) với các tính năng tìm kiếm (search), lọc (filter), và xóa (delete)
+- Kết nối cơ sở tri thức (knowledge base) với tác tử (agent) qua mô hình RAG
+- Chỉ ra khi nào việc truy xuất (retrieval) giúp ích và khi nào nó thất bại
 
 ---
 
-## Cấu Trúc Lab: 2 Phase
+## Cấu Trúc Lab: 2 Giai Đoạn (Phase)
 
-### Phase 1 — Cá Nhân: Hoàn Thành src package
+### Giai Đoạn 1 — Cá Nhân: Hoàn Thành gói mã nguồn `src`
 
-Mỗi sinh viên **tự mình** hoàn thành tất cả TODO trong `src/chunking.py`, `src/store.py`, và `src/agent.py`. `Document` dataclass và `FixedSizeChunker` đã được implement sẵn làm ví dụ.
+Mỗi sinh viên **tự mình** hoàn thành tất cả các mục CẦN LÀM (TODO) trong `src/chunking.py`, `src/store.py`, và `src/agent.py`. Lớp dữ liệu `Document` (dataclass) và `FixedSizeChunker` đã được lập trình sẵn làm ví dụ.
 
-### Phase 2 — Nhóm: So Sánh Retrieval Strategy
+### Giai Đoạn 2 — Nhóm: So Sánh Chiến Lược Truy Xuất (Retrieval Strategy)
 
-Nhóm cùng chọn một bộ tài liệu và thống nhất 5 benchmark queries. Mỗi thành viên **thử strategy riêng** (chunking, metadata), chạy cùng queries, rồi **so sánh kết quả trong nhóm** để học từ nhau.
+Nhóm cùng chọn một bộ tài liệu và thống nhất 5 câu hỏi đánh giá (benchmark queries). Mỗi thành viên **thử chiến lược riêng** (chunking, metadata), chạy cùng các câu hỏi, rồi **so sánh kết quả trong nhóm** để học hỏi lẫn nhau.
 
 ---
 
@@ -31,26 +31,26 @@ Nhóm cùng chọn một bộ tài liệu và thống nhất 5 benchmark queries
 
 ### Python 3.11 là chuẩn của Lab
 
-Phần bắt buộc được kiểm thử trên **Python 3.11**. Dùng đúng interpreter này khi tạo virtual environment (`py -3.11` trên Windows hoặc `python3.11` trên macOS/Linux); file `.python-version` cũng đã khai báo phiên bản chuẩn.
+Phần bắt buộc được kiểm thử trên **Python 3.11**. Dùng đúng trình thông dịch (interpreter) này khi tạo môi trường ảo (virtual environment) (`py -3.11` trên Windows hoặc `python3.11` trên macOS/Linux); file `.python-version` cũng đã khai báo phiên bản chuẩn.
 
 ```bash
 pip install -r requirements.txt
-pytest tests/ -v          # Phần lớn tests sẽ FAIL (chưa implement)
+pytest tests/ -v          # Phần lớn bài kiểm thử sẽ THẤT BẠI (chưa được lập trình)
 ```
 
-Mặc định, lab vẫn chạy với `_mock_embed` nên **không bắt buộc** cài embedder thật.
-File `.env` được tự động nạp khi chạy `main.py`. Với các Python snippet chạy trực tiếp, hãy `export` biến môi trường cần thiết hoặc gọi `load_dotenv()` nếu cần.
+Mặc định, lab vẫn chạy với trình nhúng giả lập `_mock_embed` nên **không bắt buộc** cài đặt mô hình nhúng (embedder) thật.
+File `.env` được tự động nạp khi chạy `main.py`. Với các đoạn mã Python (snippet) chạy trực tiếp, hãy dùng lệnh `export` cho các biến môi trường cần thiết hoặc gọi hàm `load_dotenv()` nếu cần.
 
-## Tùy Chọn Embedding Backend
+## Tùy Chọn Mô Hình Nhúng (Embedding Backend)
 
-### 1) Mặc định: Mock embedder
+### 1) Mặc định: Trình nhúng giả lập (Mock embedder)
 
 Không cần cài gì thêm ngoài:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2) Tùy chọn: Local multilingual embedder
+### 2) Tùy chọn: Trình nhúng đa ngữ cục bộ (Local multilingual embedder)
 
 ```bash
 pip install -r requirements-local.txt
@@ -62,10 +62,10 @@ print(len(embedder("embedding smoke test")))
 PY
 ```
 
-- Package `src` hỗ trợ `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, phù hợp với corpus tiếng Việt, qua `sentence-transformers`.
-- Lần chạy đầu tiên model và PyTorch dependency sẽ được tải về; đây là phần **tùy chọn**, không cần để làm TODO hoặc chạy test.
+- Gói `src` hỗ trợ mô hình `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, phù hợp với kho ngữ liệu tiếng Việt, thông qua thư viện `sentence-transformers`.
+- Lần chạy đầu tiên, mô hình và thư viện phụ thuộc PyTorch sẽ được tải về; đây là phần **tùy chọn**, không cần thiết để làm các TODO hoặc chạy bài kiểm thử.
 
-### 3) Tùy chọn: OpenAI embedder
+### 3) Tùy chọn: Trình nhúng OpenAI (OpenAI embedder)
 
 ```bash
 pip install openai
@@ -78,24 +78,24 @@ print(len(embedder("embedding smoke test")))
 PY
 ```
 
-- Model mặc định cho lựa chọn này là `text-embedding-3-small`
-- Có thể đổi model bằng:
+- Mô hình mặc định cho lựa chọn này là `text-embedding-3-small`
+- Có thể đổi mô hình bằng cách:
 ```bash
 export OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
-### Quy tắc fallback
+### Quy tắc dự phòng (fallback)
 
-- Nếu không chọn gì, lab dùng `_mock_embed`
-- Nếu chọn `local` hoặc `openai` nhưng setup thiếu, code sẽ tự fallback về `_mock_embed`
-- Có thể cấu hình qua `.env` mà không cần `source .env`
-- Script `main.py` chạy end-to-end và import public API từ package `src`
+- Nếu không chọn gì, lab mặc định dùng `_mock_embed`
+- Nếu chọn `local` hoặc `openai` nhưng thiết lập bị thiếu, mã nguồn sẽ tự động chuyển về dùng `_mock_embed`
+- Có thể cấu hình qua file `.env` mà không cần chạy lệnh `source .env`
+- File kịch bản `main.py` chạy từ đầu đến cuối và nhập (import) các API công khai từ gói `src`
 
-### Lệnh verify nhanh
+### Lệnh xác minh nhanh (verify)
 
-Sau khi cài optional dependencies, có thể verify từng backend riêng:
+Sau khi cài đặt các thư viện tùy chọn, bạn có thể kiểm tra từng backend riêng:
 
-**Verify local embedder**
+**Kiểm tra local embedder**
 
 ```bash
 python3 - <<'PY'
@@ -106,7 +106,7 @@ print(embedder._backend_name, len(embedder("embedding smoke test")))
 PY
 ```
 
-**Verify OpenAI embedder**
+**Kiểm tra OpenAI embedder**
 
 ```bash
 python3 - <<'PY'
@@ -120,7 +120,7 @@ print(embedder._backend_name, len(embedder("embedding smoke test")))
 PY
 ```
 
-> Lưu ý: `OpenAIEmbedder` cần `OPENAI_API_KEY` hợp lệ trong môi trường hoặc `.env`.
+> Lưu ý: `OpenAIEmbedder` cần biến môi trường `OPENAI_API_KEY` hợp lệ hoặc có trong file `.env`.
 
 ---
 
@@ -129,89 +129,89 @@ PY
 ```
 ├── README.md              ← Bạn đang đọc file này
 ├── exercises.md           ← Bài tập (4 phần)
-├── main.py               ← Entry point cho manual demo
+├── main.py               ← Điểm bắt đầu cho việc chạy thử thủ công (manual demo)
 ├── src/
-│   ├── chunking.py       ← Chunking classes + similarity helper
-│   ├── store.py          ← EmbeddingStore
-│   ├── agent.py          ← KnowledgeBaseAgent
+│   ├── chunking.py       ← Các lớp Chunking + hàm hỗ trợ tính độ tương tự
+│   ├── store.py          ← Lớp EmbeddingStore
+│   ├── agent.py          ← Lớp KnowledgeBaseAgent
 │   └── ...               ← Các module nhỏ hơn
-├── data/                  ← Tài liệu mẫu + tài liệu nhóm (.txt/.md)
+├── data/                  ← Tài liệu mẫu + tài liệu do nhóm thu thập (.txt/.md)
 ├── tests/
-│   └── test_solution.py   ← Test suite (30+ tests)
+│   └── test_solution.py   ← Bộ kiểm thử (Hơn 30 tests)
 ├── report/
-│   └── REPORT.md         ← Báo cáo (1 file/sinh viên)
+│   └── REPORT.md         ← File báo cáo (1 file/sinh viên)
 ├── docs/
-│   ├── EVALUATION.md     ← Evaluation metrics
-│   ├── INSTRUCTOR_GUIDE.md ← Instructor notes
+│   ├── EVALUATION.md     ← Các tiêu chí đánh giá
+│   ├── INSTRUCTOR_GUIDE.md ← Ghi chú dành cho giảng viên
 │   └── SCORING.md        ← Tiêu chí chấm điểm
 └── requirements.txt
 ```
 
 ---
 
-## Các Giai Đoạn Lab
+## Các Giai Đoạn Của Lab
 
 | Giai Đoạn | Hoạt Động |
 |-----------|-----------|
-| Chuẩn bị tài liệu | Nhóm chọn domain, thu thập tài liệu, chuyển sang .md/.txt |
-| Lập trình cá nhân | Warm-up + implement tất cả TODO (cá nhân) |
-| Thiết kế strategy | Mỗi người thử strategy riêng, thống nhất 5 queries |
-| So sánh trong nhóm | Chạy benchmark, so sánh kết quả, chuẩn bị demo |
-| Demo & thảo luận | Trình bày strategy + so sánh, thảo luận liên nhóm |
+| Chuẩn bị tài liệu | Nhóm chọn chủ đề, thu thập tài liệu, chuyển sang định dạng .md/.txt |
+| Lập trình cá nhân | Khởi động + hoàn thành tất cả TODO (cá nhân) |
+| Thiết kế chiến lược | Mỗi người thử chiến lược riêng, thống nhất 5 câu hỏi đánh giá |
+| So sánh trong nhóm | Chạy đánh giá (benchmark), so sánh kết quả, chuẩn bị thuyết trình |
+| Thuyết trình & thảo luận | Trình bày chiến lược + so sánh, thảo luận giữa các nhóm |
 
 ---
 
-## Nhiệm Vụ Cá Nhân (Phase 1)
+## Nhiệm Vụ Cá Nhân (Giai Đoạn 1)
 
-### Đã implement sẵn (tham khảo)
-- `Document` dataclass — container cho text + metadata
-- `FixedSizeChunker` — sliding window chunking
+### Đã lập trình sẵn (để tham khảo)
+- `Document` dataclass — cấu trúc lưu trữ văn bản + siêu dữ liệu (metadata)
+- `FixedSizeChunker` — chia nhỏ theo kích thước cố định với cơ chế cửa sổ trượt (sliding window)
 
-### Cần implement
-- `SentenceChunker` — chia theo ranh giới câu
-- `RecursiveChunker` — thử từng separator theo thứ tự
-- `compute_similarity` — cosine similarity
+### Cần lập trình (CẦN LÀM)
+- `SentenceChunker` — chia nhỏ theo ranh giới câu
+- `RecursiveChunker` — thử nghiệm từng dấu phân cách theo thứ tự
+- `compute_similarity` — tính độ tương tự cosine
 - `ChunkingStrategyComparator` — so sánh 3 chiến lược
-- `EmbeddingStore` — wrapper quanh vector store (5 methods)
-- `KnowledgeBaseAgent` — RAG pattern agent
+- `EmbeddingStore` — lớp bao bọc (wrapper) cho kho lưu trữ vector (gồm 5 phương thức)
+- `KnowledgeBaseAgent` — tác tử theo mô hình RAG
 
 ---
 
-## Nhiệm Vụ Nhóm (Phase 2) — So Sánh Strategy
+## Nhiệm Vụ Nhóm (Giai Đoạn 2) — So Sánh Chiến Lược
 
-1. **Chọn bộ tài liệu** (5-10 docs): FAQ, SOP, policy, internal docs, hoặc domain bất kỳ
-2. **Chuyển sang .txt/.md** nếu cần (xem tips trong exercises.md)
-3. **Thống nhất 5 benchmark queries** kèm gold answers
-4. **Mỗi thành viên thử strategy riêng**: chunking method, tham số, metadata schema
-5. **So sánh kết quả trong nhóm**: strategy nào cho retrieval tốt hơn? Tại sao?
+1. **Chọn bộ tài liệu** (5-10 tài liệu): FAQ, Quy trình chuẩn (SOP), chính sách, tài liệu nội bộ, hoặc bất kỳ chủ đề nào
+2. **Chuyển sang định dạng .txt/.md** nếu cần (xem mẹo trong exercises.md)
+3. **Thống nhất 5 câu hỏi đánh giá** kèm theo câu trả lời chuẩn (gold answers)
+4. **Mỗi thành viên thử chiến lược riêng**: phương pháp chunking, các tham số, cấu trúc metadata
+5. **So sánh kết quả trong nhóm**: chiến lược nào cho việc truy xuất tốt hơn? Tại sao?
 
 ---
 
-## Cách Tự Đánh Giá Kết Quả Retrieval
+## Cách Tự Đánh Giá Kết Quả Truy Xuất (Retrieval)
 
-Khi chạy benchmark, đừng chỉ hỏi **"code có chạy không?"** mà hãy tự kiểm tra 5 góc nhìn sau:
+Khi chạy đánh giá (benchmark), đừng chỉ hỏi **"code có chạy không?"** mà hãy tự kiểm tra 5 góc nhìn sau:
 
-1. **Retrieval Precision**
-   - Top-3 có chứa chunk thật sự liên quan không?
-   - Score có tách được kết quả tốt và nhiễu không?
+1. **Độ chính xác của truy xuất (Retrieval Precision)**
+   - Top-3 kết quả trả về có chứa chunk thực sự liên quan không?
+   - Điểm số (Score) có giúp phân biệt được kết quả tốt và kết quả nhiễu không?
 
-2. **Chunk Coherence**
-   - Chunk có giữ được ý trọn vẹn không?
-   - Strategy nào làm chunk dễ đọc và dễ retrieve hơn?
+2. **Tính mạch lạc của Chunk (Chunk Coherence)**
+   - Chunk có giữ được trọn vẹn ý nghĩa không?
+   - Chiến lược nào làm cho chunk dễ đọc và dễ truy xuất hơn?
 
-3. **Metadata Utility**
-   - `search_with_filter()` có giúp tăng độ chính xác không?
-   - Filter có quá chặt, làm mất kết quả tốt không?
+3. **Tính hữu dụng của Metadata (Metadata Utility)**
+   - Hàm `search_with_filter()` có giúp tăng độ chính xác không?
+   - Bộ lọc có quá khắt khe, làm mất đi các kết quả tốt không?
 
-4. **Grounding Quality**
-   - Câu trả lời của agent có thật sự dựa trên retrieved context không?
-   - Có thể chỉ ra chunk nào hỗ trợ câu trả lời không?
+4. **Chất lượng thông tin nền (Grounding Quality)**
+   - Câu trả lời của tác tử (agent) có thực sự dựa trên ngữ cảnh được truy xuất không?
+   - Bạn có thể chỉ ra chunk nào cung cấp thông tin cho câu trả lời không?
 
-5. **Data Strategy Impact**
-   - Bộ tài liệu nhóm chọn có phù hợp với benchmark queries không?
-   - Strategy chunking / metadata của bạn có hợp với domain không?
+5. **Tác động của chiến lược dữ liệu (Data Strategy Impact)**
+   - Bộ tài liệu mà nhóm chọn có phù hợp với các câu hỏi đánh giá không?
+   - Chiến lược chunking / metadata của bạn có phù hợp với chủ đề không?
 
-> Xem `docs/EVALUATION.md` nếu bạn muốn một checklist chi tiết hơn cho phần này.
+> Xem `docs/EVALUATION.md` nếu bạn muốn một danh sách kiểm tra (checklist) chi tiết hơn cho phần này.
 
 ---
 
@@ -221,16 +221,16 @@ Xem chi tiết tại `docs/SCORING.md`. Tóm tắt:
 
 | Phần | Điểm |
 |------|------|
-| Cá nhân (code + phân tích) | 60 |
-| Nhóm (strategy + so sánh) | 40 |
+| Cá nhân (mã nguồn + phân tích) | 60 |
+| Nhóm (chiến lược + so sánh) | 40 |
 | **Tổng** | **100** |
 
 ---
 
 ## Sản Phẩm Nộp Bài
 
-1. `src/` — hoàn thành tất cả TODO cần thiết
-2. `report/REPORT.md` — một báo cáo/sinh viên (gồm cả phần nhóm và cá nhân)
+1. Thư mục `src/` — hoàn thành tất cả các mục CẦN LÀM (TODO) cần thiết
+2. File `report/REPORT.md` — một báo cáo cho mỗi sinh viên (bao gồm cả phần làm việc nhóm và cá nhân)
 
 ---
 

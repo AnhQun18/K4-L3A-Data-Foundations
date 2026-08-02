@@ -1,25 +1,25 @@
-# RAG System Design for an Internal Knowledge Assistant
+# Thiết kế Hệ thống RAG cho Trợ lý Tri thức Nội bộ
 
-## Background
+## Bối cảnh
 
-A product team wants an assistant that can answer questions about onboarding, deployment workflows, service ownership, and troubleshooting steps. The company already has documentation spread across markdown handbooks, engineering runbooks, and support notes, but employees waste time searching across disconnected folders.
+Một nhóm sản phẩm muốn một trợ lý có thể trả lời các câu hỏi về việc giới thiệu (onboarding), quy trình triển khai, sở hữu dịch vụ, và các bước khắc phục sự cố. Công ty đã có sẵn tài liệu rải rác trên các sổ tay markdown, sổ tay kỹ thuật (runbooks), và ghi chú hỗ trợ, nhưng nhân viên lãng phí thời gian tìm kiếm trên các thư mục không liên kết với nhau.
 
-## Goal
+## Mục tiêu
 
-Build a retrieval-augmented generation system that finds relevant internal documents before producing an answer. The assistant should reduce hallucinations by grounding its responses in retrieved text and should clearly separate retrieved context from generated synthesis.
+Xây dựng một hệ thống tạo văn bản tăng cường truy xuất (retrieval-augmented generation - RAG) để tìm các tài liệu nội bộ có liên quan trước khi đưa ra câu trả lời. Trợ lý nên giảm thiểu sự ảo giác (hallucinations) bằng cách căn cứ phản hồi của nó trên văn bản truy xuất được và nên phân biệt rõ ràng giữa ngữ cảnh được truy xuất và phần tổng hợp tự tạo.
 
-## Proposed Architecture
+## Kiến trúc Đề xuất
 
-The ingestion pipeline reads markdown and text files from trusted directories, chunks them into semantically coherent segments, and stores those segments with metadata. Each stored record includes the source path, document identifier, document type, and department. The retrieval layer embeds user questions, performs similarity search, and optionally applies metadata filters when the question is scoped to a specific team.
+Đường ống thu thập (ingestion pipeline) đọc các file markdown và text từ các thư mục đáng tin cậy, chia nhỏ chúng thành các đoạn (segments) mạch lạc về ngữ nghĩa, và lưu trữ các đoạn đó cùng với metadata. Mỗi bản ghi được lưu trữ bao gồm đường dẫn nguồn, mã định danh tài liệu, loại tài liệu, và phòng ban. Lớp truy xuất sẽ embed các câu hỏi của người dùng, thực hiện tìm kiếm tương tự (similarity search), và tùy chọn áp dụng các bộ lọc metadata khi câu hỏi được thu hẹp trong phạm vi một nhóm cụ thể.
 
-The application layer takes the top retrieved chunks and constructs a prompt that instructs the language model to answer only from the supplied evidence. If the retrieval results are weak or contradictory, the assistant should say so explicitly instead of pretending the answer is complete.
+Lớp ứng dụng lấy các đoạn (chunks) truy xuất được tốt nhất và xây dựng một lời nhắc (prompt) hướng dẫn mô hình ngôn ngữ chỉ trả lời từ các bằng chứng được cung cấp. Nếu kết quả truy xuất yếu hoặc mâu thuẫn, trợ lý nên nói rõ điều đó thay vì giả vờ rằng câu trả lời đã hoàn chỉnh.
 
-## Evaluation Plan
+## Kế hoạch Đánh giá
 
-The team should measure retrieval quality with realistic employee questions such as "How do I deploy the billing API?" or "Who owns the checkout service?" Success is not only whether the answer sounds fluent, but whether the retrieved evidence is relevant, traceable, and up to date.
+Nhóm nên đo lường chất lượng truy xuất bằng các câu hỏi thực tế của nhân viên như "Làm thế nào để triển khai billing API?" hoặc "Ai sở hữu dịch vụ checkout?" Thành công không chỉ là việc câu trả lời nghe trôi chảy hay không, mà là liệu bằng chứng được truy xuất có liên quan, có thể truy vết, và cập nhật hay không.
 
-A useful test plan includes comparing chunking strategies, checking whether metadata filters improve relevance, and recording failure cases. Example failure cases might include outdated documents outranking current runbooks, small chunks losing critical caveats, or multilingual content confusing the embedding model.
+Một kế hoạch kiểm thử hữu ích bao gồm so sánh các chiến lược chia nhỏ (chunking), kiểm tra xem các bộ lọc metadata có cải thiện độ liên quan không, và ghi chép lại các trường hợp thất bại. Ví dụ về các trường hợp thất bại có thể bao gồm tài liệu lỗi thời được xếp hạng cao hơn sổ tay hiện tại, các đoạn nhỏ làm mất các lưu ý quan trọng, hoặc nội dung đa ngôn ngữ làm rối mô hình embedding.
 
-## Operational Considerations
+## Lưu ý Vận hành
 
-As the document set grows, the team should track re-indexing behavior, document deletion, and source freshness. The system should also log which chunks were retrieved so reviewers can inspect why a given answer was produced. That feedback loop is essential for improving both the data and the prompting strategy.
+Khi tập tài liệu tăng lên, nhóm nên theo dõi hành vi index lại, việc xóa tài liệu, và độ mới của nguồn. Hệ thống cũng nên ghi log lại các đoạn nào đã được truy xuất để người đánh giá có thể xem xét tại sao một câu trả lời nhất định được tạo ra. Vòng lặp phản hồi đó là thiết yếu để cải thiện cả dữ liệu và chiến lược đưa ra câu lệnh (prompting strategy).

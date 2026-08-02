@@ -1,21 +1,21 @@
-# Chunking Experiment Report
+# Báo cáo Thử nghiệm Chia nhỏ văn bản (Chunking Experiment Report)
 
-## Purpose
+## Mục đích
 
-This report summarizes a small experiment comparing fixed-size chunking, sentence-based chunking, and recursive chunking on internal documentation. The objective was to understand how chunk boundaries affect retrieval quality, context preservation, and the usefulness of returned passages.
+Báo cáo này tóm tắt một thử nghiệm nhỏ so sánh chia nhỏ theo kích thước cố định (fixed-size chunking), chia nhỏ theo câu (sentence-based chunking), và chia nhỏ đệ quy (recursive chunking) trên tài liệu nội bộ. Mục tiêu là để hiểu ranh giới chia nhỏ (chunk boundaries) ảnh hưởng thế nào đến chất lượng truy xuất, khả năng bảo toàn ngữ cảnh, và tính hữu ích của các đoạn văn bản được trả về.
 
-## Fixed-Size Chunking
+## Chia nhỏ kích thước cố định (Fixed-Size Chunking)
 
-Fixed-size chunking was simple to implement and produced predictable chunk counts. It worked reasonably well for long technical documents because every chunk stayed below a target size. However, some chunks split explanations in awkward places, especially when a procedure spanned multiple sentences. In those cases, search results sometimes returned a fragment that mentioned the right keyword but omitted the actual instruction.
+Chia nhỏ theo kích thước cố định rất dễ lập trình và tạo ra số lượng chunk có thể dự đoán được. Nó hoạt động khá tốt cho các tài liệu kỹ thuật dài vì mỗi chunk đều nằm dưới một kích thước mục tiêu. Tuy nhiên, một số chunk lại cắt ngang các phần giải thích ở những chỗ bất hợp lý, đặc biệt là khi một quy trình kéo dài qua nhiều câu. Trong những trường hợp đó, kết quả tìm kiếm đôi khi trả về một đoạn có chứa từ khóa nhưng lại thiếu mất hướng dẫn thực tế.
 
-## Sentence-Based Chunking
+## Chia nhỏ theo câu (Sentence-Based Chunking)
 
-Sentence-based chunking improved readability because each chunk aligned with natural language boundaries. This made manual inspection easier and often produced more coherent retrieval results for short policy documents and FAQs. The downside was that chunk sizes became less consistent, and some dense sections still exceeded ideal embedding length when too many long sentences were grouped together.
+Chia nhỏ theo câu cải thiện khả năng đọc vì mỗi chunk khớp với ranh giới ngôn ngữ tự nhiên. Điều này giúp việc kiểm tra thủ công dễ dàng hơn và thường tạo ra kết quả truy xuất mạch lạc hơn cho các tài liệu chính sách ngắn và FAQ (Câu hỏi thường gặp). Nhược điểm là kích thước các chunk trở nên kém nhất quán hơn, và một số phần nội dung dày đặc vẫn vượt quá độ dài embedding lý tưởng khi quá nhiều câu dài được gộp lại với nhau.
 
-## Recursive Chunking
+## Chia nhỏ đệ quy (Recursive Chunking)
 
-Recursive chunking offered the best balance in the experiment. It first tried to split on larger structural boundaries such as paragraphs, then fell back to smaller separators only when needed. As a result, most chunks preserved context while still staying within the target size range. For the tested data, recursive chunking produced the most consistently useful passages for downstream question answering.
+Chia nhỏ đệ quy mang lại sự cân bằng tốt nhất trong thử nghiệm. Đầu tiên nó cố gắng cắt ở các ranh giới cấu trúc lớn hơn như đoạn văn, sau đó mới dùng đến các dấu phân cách nhỏ hơn khi cần thiết. Kết quả là, hầu hết các chunk giữ được ngữ cảnh trong khi vẫn nằm trong khoảng kích thước mục tiêu. Đối với dữ liệu được thử nghiệm, chia nhỏ đệ quy tạo ra các đoạn văn bản hữu ích nhất quán nhất cho việc trả lời câu hỏi ở bước sau.
 
-## Conclusion
+## Kết luận
 
-The experiment suggests that there is no universal best strategy, but recursive chunking is a strong default for mixed technical documentation. Teams should still validate this assumption with their own queries, because retrieval quality depends on both the document style and the kinds of questions users actually ask.
+Thử nghiệm cho thấy không có một chiến lược chung nào là tốt nhất, nhưng chia nhỏ đệ quy là một lựa chọn mặc định tốt cho tài liệu kỹ thuật hỗn hợp. Các nhóm vẫn nên xác thực giả định này bằng các câu hỏi thực tế của riêng họ, bởi vì chất lượng truy xuất phụ thuộc vào cả văn phong tài liệu và loại câu hỏi mà người dùng thực sự đặt ra.

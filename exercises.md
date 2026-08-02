@@ -1,81 +1,81 @@
-# Day 7 — Exercises
-## Data Foundations: Embedding & Vector Store | Lab Worksheet
+# Ngày 7 — Bài tập
+## Nền tảng Dữ liệu: Embedding & Vector Store | Bài tập thực hành
 
 ---
 
-## Part 1 — Warm-up (Cá nhân)
+## Phần 1 — Khởi động (Cá nhân)
 
-### Exercise 1.1 — Cosine Similarity in Plain Language
+### Bài tập 1.1 — Cosine Similarity (Độ tương tự Cosine) bằng ngôn ngữ đời thường
 
-No math required — explain conceptually:
+Không yêu cầu toán học — hãy giải thích về mặt khái niệm:
 
-- What does it mean for two text chunks to have high cosine similarity?
-- Give a concrete example of two sentences that would have HIGH similarity and two that would have LOW similarity.
-- Why is cosine similarity preferred over Euclidean distance for text embeddings?
+- Điều gì xảy ra khi hai đoạn văn bản có độ tương tự cosine cao?
+- Đưa ra một ví dụ cụ thể về hai câu sẽ có độ tương tự CAO và hai câu sẽ có độ tương tự THẤP.
+- Tại sao độ tương tự cosine lại được ưu tiên hơn khoảng cách Euclid (Euclidean distance) đối với text embeddings?
 
-> **Ghi kết quả vào:** Report — Section 1 (Warm-up)
-
----
-
-### Exercise 1.2 — Chunking Math
-
-- A document is 10,000 characters. You chunk it with `chunk_size=500`, `overlap=50`. How many chunks do you expect?
-- Formula: `num_chunks = ceil((doc_length - overlap) / (chunk_size - overlap))`
-- If overlap is increased to 100, how does this change the chunk count? Why would you want more overlap?
-
-> **Ghi kết quả vào:** Report — Section 1 (Warm-up)
+> **Ghi kết quả vào:** Báo cáo — Phần 1 (Khởi động)
 
 ---
 
-## Part 2 — Core Coding (Cá nhân)
+### Bài tập 1.2 — Bài toán tính toán Chunking
 
-Implement all TODOs in `src/chunking.py`, `src/store.py`, và `src/agent.py`. `Document` dataclass và `FixedSizeChunker` đã được implement sẵn làm ví dụ — đọc kỹ để hiểu pattern trước khi implement phần còn lại.
+- Một tài liệu có độ dài 10,000 ký tự. Bạn tiến hành chia nhỏ (chunk) với `chunk_size=500` (kích thước chunk), `overlap=50` (độ chồng chéo). Bạn dự kiến sẽ có bao nhiêu chunks?
+- Công thức: `số lượng chunk = làm_tròn_lên((độ_dài_tài_liệu - độ_chồng_chéo) / (kích_thước_chunk - độ_chồng_chéo))`
+- Nếu độ chồng chéo (overlap) tăng lên 100, số lượng chunk sẽ thay đổi như thế nào? Tại sao bạn lại muốn tăng độ chồng chéo?
 
-Run `pytest tests/` to check progress.
-
-### Checklist
-- [x] `Document` dataclass — ĐÃ IMPLEMENT SẴN
-- [x] `FixedSizeChunker` — ĐÃ IMPLEMENT SẴN
-- [ ] `SentenceChunker` — split on sentence boundaries, group into chunks
-- [ ] `RecursiveChunker` — try separators in order, recurse on oversized pieces
-- [ ] `compute_similarity` — cosine similarity formula with zero-magnitude guard
-- [ ] `ChunkingStrategyComparator` — call all three, compute stats
-- [ ] `EmbeddingStore.__init__` — initialize store (in-memory or ChromaDB)
-- [ ] `EmbeddingStore.add_documents` — embed and store each document
-- [ ] `EmbeddingStore.search` — embed query, rank by dot product
-- [ ] `EmbeddingStore.get_collection_size` — return count
-- [ ] `EmbeddingStore.search_with_filter` — filter by metadata, then search
-- [ ] `EmbeddingStore.delete_document` — remove all chunks for a doc_id
-- [ ] `KnowledgeBaseAgent.answer` — retrieve + build prompt + call LLM
-
-> **Nộp code:** `src/`
-> **Ghi approach vào:** Report — Section 4 (My Approach)
+> **Ghi kết quả vào:** Báo cáo — Phần 1 (Khởi động)
 
 ---
 
-## Part 3 — So Sánh Retrieval Strategy (Nhóm)
+## Phần 2 — Lập trình cốt lõi (Cá nhân)
 
-### Exercise 3.0 — Chuẩn Bị Tài Liệu (Giờ đầu tiên)
+Hoàn thành tất cả các TODOs trong `src/chunking.py`, `src/store.py`, và `src/agent.py`. `Document` dataclass và `FixedSizeChunker` đã được triển khai sẵn làm ví dụ — hãy đọc kỹ để hiểu cấu trúc trước khi lập trình phần còn lại.
 
-Mỗi nhóm chọn một domain và chuẩn bị bộ tài liệu:
+Chạy `pytest tests/` để kiểm tra tiến độ.
 
-**Step 1 — Chọn domain:** FAQ, SOP, policy, docs kỹ thuật, recipes, luật, y tế, v.v.
+### Danh sách cần làm (Checklist)
+- [x] `Document` dataclass — ĐÃ TRIỂN KHAI SẴN
+- [x] `FixedSizeChunker` — ĐÃ TRIỂN KHAI SẴN
+- [ ] `SentenceChunker` — tách dựa trên ranh giới câu, nhóm lại thành các chunks
+- [ ] `RecursiveChunker` — thử nghiệm các dấu phân cách (separators) theo thứ tự, thực hiện đệ quy trên các đoạn có kích thước quá lớn
+- [ ] `compute_similarity` — công thức tính độ tương tự cosine kèm cơ chế bảo vệ chia cho 0
+- [ ] `ChunkingStrategyComparator` — gọi cả ba chiến lược, tính toán các chỉ số thống kê
+- [ ] `EmbeddingStore.__init__` — khởi tạo store (lưu trữ trong bộ nhớ hoặc ChromaDB)
+- [ ] `EmbeddingStore.add_documents` — nhúng (embed) và lưu trữ từng tài liệu
+- [ ] `EmbeddingStore.search` — nhúng truy vấn, xếp hạng theo tích vô hướng (dot product)
+- [ ] `EmbeddingStore.get_collection_size` — trả về số lượng
+- [ ] `EmbeddingStore.search_with_filter` — lọc theo siêu dữ liệu (metadata), sau đó tìm kiếm
+- [ ] `EmbeddingStore.delete_document` — xóa tất cả các chunks của một doc_id
+- [ ] `KnowledgeBaseAgent.answer` — truy xuất (retrieve) + tạo prompt + gọi LLM
 
-**Step 2 — Thu thập 5-10 tài liệu.** Chỉ dùng nguồn công khai hoặc nguồn nhóm có quyền sử dụng; lưu dưới dạng `.txt` hoặc `.md` vào thư mục `data/`.
+> **Nộp code:** thư mục `src/`
+> **Ghi lại hướng tiếp cận vào:** Báo cáo — Phần 4 (Hướng tiếp cận của tôi)
+
+---
+
+## Phần 3 — So Sánh Chiến Lược Truy Xuất (Nhóm)
+
+### Bài tập 3.0 — Chuẩn Bị Tài Liệu (Giờ đầu tiên)
+
+Mỗi nhóm chọn một chủ đề (domain) và chuẩn bị bộ tài liệu:
+
+**Bước 1 — Chọn chủ đề:** FAQ (Câu hỏi thường gặp), SOP (Quy trình chuẩn), chính sách, tài liệu kỹ thuật, công thức nấu ăn, luật, y tế, v.v.
+
+**Bước 2 — Thu thập 5-10 tài liệu.** Chỉ dùng nguồn công khai hoặc nguồn nhóm có quyền sử dụng; lưu dưới dạng `.txt` hoặc `.md` vào thư mục `data/`.
 
 **Quy tắc dữ liệu bắt buộc:**
 - Không đưa dữ liệu cá nhân, thông tin đăng nhập, hồ sơ nội bộ hoặc nội dung có quyền sử dụng không rõ ràng vào repo.
 - Với mỗi tài liệu, ghi `source_url`, `retrieved_at` (ngày lấy) và `document_version` hoặc ngày hiệu lực nếu nguồn có nêu.
-- Đưa ba trường trên vào metadata khi ingest; chúng giúp kiểm tra độ mới và truy vết câu trả lời.
+- Đưa ba trường trên vào siêu dữ liệu (metadata) khi nạp (ingest); chúng giúp kiểm tra độ mới và truy vết câu trả lời.
 
-> **Tip chuyển PDF sang Markdown:**
+> **Mẹo chuyển PDF sang Markdown:**
 > - `pip install marker-pdf` → `marker_single input.pdf output/` (chất lượng cao, giữ cấu trúc)
 > - `pip install pymupdf4llm` → `pymupdf4llm.to_markdown("input.pdf")` (nhanh, đơn giản)
-> - Hoặc copy-paste nội dung từ PDF/web vào file `.txt`
+> - Hoặc sao chép-dán (copy-paste) nội dung từ PDF/web vào file `.txt`
 
 Ghi vào bảng:
 
-| # | Tên tài liệu | Source URL | Ngày lấy / version | Số ký tự | Metadata đã gán |
+| # | Tên tài liệu | Nguồn (Source URL) | Ngày lấy / Phiên bản | Số ký tự | Metadata đã gán |
 |---|--------------|------------|--------------------|----------|-----------------|
 | 1 | | | | | |
 | 2 | | | | | |
@@ -83,46 +83,46 @@ Ghi vào bảng:
 | 4 | | | | | |
 | 5 | | | | | |
 
-**Step 3 — Thiết kế metadata schema:** Mỗi tài liệu cần `source_url`, `retrieved_at`, `document_version` và ít nhất 2 trường retrieval hữu ích (e.g., `category`, `audience`, `language`, `difficulty`).
+**Bước 3 — Thiết kế cấu trúc metadata (metadata schema):** Mỗi tài liệu cần `source_url`, `retrieved_at`, `document_version` và ít nhất 2 trường hữu ích cho việc truy xuất (ví dụ: `category`, `customer_role`, `language`, `difficulty`).
 
-> **Ghi kết quả vào:** Report — Section 2 (Document Selection)
+> **Ghi kết quả vào:** Báo cáo — Phần 2 (Lựa chọn tài liệu)
 
 ---
 
-### Exercise 3.1 — Thiết Kế Retrieval Strategy (Mỗi người thử riêng)
+### Bài tập 3.1 — Thiết Kế Chiến Lược Truy Xuất (Mỗi người thử riêng)
 
-Mỗi thành viên **tự chọn strategy riêng** để thử trên cùng bộ tài liệu nhóm.
+Mỗi thành viên **tự chọn chiến lược riêng** để thử nghiệm trên cùng bộ tài liệu của nhóm.
 
-**Step 1 — Baseline:** Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu. Ghi kết quả.
+**Bước 1 — Đường cơ sở (Baseline):** Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu. Ghi lại kết quả.
 
-**Step 2 — Chọn hoặc thiết kế strategy của bạn:**
-- Dùng 1 trong 3 built-in strategies với tham số tối ưu, HOẶC
-- Thiết kế custom strategy cho domain (ví dụ: chunk by Q&A pairs, by sections, by headers)
-- Mỗi thành viên nên thử strategy **khác nhau** để có gì so sánh
+**Bước 2 — Chọn hoặc thiết kế chiến lược của bạn:**
+- Dùng 1 trong 3 chiến lược có sẵn (built-in strategies) với tham số tối ưu, HOẶC
+- Thiết kế chiến lược tùy chỉnh cho chủ đề của bạn (ví dụ: chia nhỏ theo cặp Câu hỏi-Đáp án, theo các phần (sections), theo tiêu đề (headers))
+- Mỗi thành viên nên thử một chiến lược **khác nhau** để có cơ sở so sánh
 
 ```python
 class CustomChunker:
-    """Your custom chunking strategy for [your domain].
+    """Chiến lược chia nhỏ tùy chỉnh cho [chủ đề của bạn].
 
-    Design rationale: [explain why this strategy fits your data]
+    Lý do thiết kế: [giải thích tại sao chiến lược này phù hợp với dữ liệu của bạn]
     """
 
     def chunk(self, text: str) -> list[str]:
-        # Your implementation here
+        # Viết mã nguồn của bạn ở đây
         ...
 ```
 
-**Step 3 — So sánh:** Custom/tuned strategy vs baseline trên cùng tài liệu.
+**Bước 3 — So sánh:** So sánh chiến lược tùy chỉnh/được tinh chỉnh (custom/tuned strategy) với đường cơ sở (baseline) trên cùng tài liệu.
 
-> **Ghi kết quả vào:** Report — Section 3 (Chunking Strategy)
+> **Ghi kết quả vào:** Báo cáo — Phần 3 (Chiến lược chia nhỏ - Chunking Strategy)
 
 ---
 
-### Exercise 3.2 — Chuẩn Bị Benchmark Queries
+### Bài tập 3.2 — Chuẩn Bị Câu Hỏi Đánh Giá (Benchmark Queries)
 
-Mỗi nhóm viết **đúng 5 benchmark queries** kèm **gold answers**.
+Mỗi nhóm viết **đúng 5 câu hỏi đánh giá** kèm theo **câu trả lời chuẩn (gold answers)**.
 
-| # | Query | Gold Answer (câu trả lời đúng) | Chunk nào chứa thông tin? |
+| # | Câu hỏi (Query) | Câu trả lời chuẩn (Gold Answer) | Chunk nào chứa thông tin? |
 |---|-------|-------------------------------|--------------------------|
 | 1 | | | |
 | 2 | | | |
@@ -131,52 +131,52 @@ Mỗi nhóm viết **đúng 5 benchmark queries** kèm **gold answers**.
 | 5 | | | |
 
 **Yêu cầu:**
-- Queries phải đa dạng (không hỏi 5 câu giống nhau)
-- Gold answers phải cụ thể và có thể verify từ tài liệu
-- Ít nhất 1 query yêu cầu metadata filtering để trả lời tốt
+- Câu hỏi phải đa dạng (không hỏi 5 câu có nội dung/cấu trúc giống hệt nhau)
+- Câu trả lời chuẩn phải cụ thể và có thể kiểm chứng (verify) từ tài liệu
+- Ít nhất 1 câu hỏi yêu cầu lọc bằng metadata (metadata filtering) để trả lời tốt
 
-> **Ghi kết quả vào:** Report — Section 6 (Results — Benchmark Queries & Gold Answers)
-
----
-
-### Exercise 3.3 — Cosine Similarity Predictions (Cá nhân)
-
-Call `compute_similarity()` on 5 pairs of sentences. **Before running**, predict which pairs will have highest/lowest similarity. Record your predictions and the actual results. Reflect on what surprised you most.
-
-> **Ghi kết quả vào:** Report — Section 5 (Similarity Predictions)
+> **Ghi kết quả vào:** Báo cáo — Phần 6 (Kết quả — Câu hỏi đánh giá & Câu trả lời chuẩn)
 
 ---
 
-### Exercise 3.4 — Chạy Benchmark & So Sánh Trong Nhóm
+### Bài tập 3.3 — Dự Đoán Độ Tương Tự Cosine (Cá nhân)
 
-**Step 1:** Mỗi thành viên chạy 5 benchmark queries với strategy riêng. Ghi kết quả top-3 cho mỗi query.
+Gọi hàm `compute_similarity()` trên 5 cặp câu. **Trước khi chạy**, hãy dự đoán xem cặp câu nào sẽ có độ tương tự cao nhất/thấp nhất. Ghi lại các dự đoán của bạn và kết quả thực tế. Suy ngẫm xem điều gì khiến bạn ngạc nhiên nhất.
 
-**Step 2:** So sánh kết quả trong nhóm:
-- Strategy nào cho retrieval tốt nhất? Tại sao?
-- Có query nào mà strategy A tốt hơn B nhưng ngược lại ở query khác?
-- Metadata filtering có giúp ích không?
-
-**Step 3:** Thảo luận và rút ra bài học — chuẩn bị cho phần demo với các nhóm khác.
-
-> **Ghi kết quả vào:** Report — Section 6 (Results)
-> **Gợi ý đánh giá:** xem checklist ngắn trong `README.md` mục **Cách Tự Đánh Giá Kết Quả Retrieval** hoặc chi tiết hơn trong `docs/EVALUATION.md`.
+> **Ghi kết quả vào:** Báo cáo — Phần 5 (Dự đoán độ tương tự)
 
 ---
 
-### Exercise 3.5 — Failure Analysis
+### Bài tập 3.4 — Chạy Đánh Giá & So Sánh Trong Nhóm
 
-Tìm ít nhất **1 failure case** trong quá trình so sánh. Mô tả:
-- Query nào retrieval thất bại?
-- Tại sao? (chunk quá nhỏ/lớn, metadata thiếu, query mơ hồ, v.v.)
+**Bước 1:** Mỗi thành viên chạy 5 câu hỏi đánh giá với chiến lược riêng. Ghi lại kết quả top-3 cho mỗi câu hỏi.
+
+**Bước 2:** So sánh kết quả trong nhóm:
+- Chiến lược nào cho việc truy xuất tốt nhất? Tại sao?
+- Có câu hỏi nào mà chiến lược A tốt hơn B nhưng lại ngược lại ở câu hỏi khác không?
+- Lọc bằng metadata (Metadata filtering) có giúp ích không?
+
+**Bước 3:** Thảo luận và rút ra bài học — chuẩn bị cho phần demo (thuyết trình) với các nhóm khác.
+
+> **Ghi kết quả vào:** Báo cáo — Phần 6 (Kết quả)
+> **Gợi ý đánh giá:** xem danh sách kiểm tra ngắn trong `README.md` mục **Cách Tự Đánh Giá Kết Quả Retrieval** hoặc chi tiết hơn trong file `docs/EVALUATION.md`.
+
+---
+
+### Bài tập 3.5 — Phân Tích Lỗi (Failure Analysis)
+
+Tìm ít nhất **1 trường hợp lỗi (failure case)** trong quá trình so sánh. Mô tả:
+- Câu hỏi nào mà quá trình truy xuất gặp thất bại?
+- Tại sao? (do chunk quá nhỏ/quá lớn, thiếu metadata, câu hỏi mơ hồ, v.v.)
 - Đề xuất cải thiện?
 
-> **Ghi kết quả vào:** Report — Section 7 (What I Learned)
-> **Gợi ý:** failure analysis nên tham chiếu các góc nhìn như precision, chunk coherence, metadata utility, và grounding quality.
+> **Ghi kết quả vào:** Báo cáo — Phần 7 (Những gì tôi học được)
+> **Gợi ý:** phân tích lỗi nên tham chiếu từ các góc nhìn như độ chính xác (precision), tính mạch lạc của chunk (chunk coherence), tính hữu dụng của metadata, và chất lượng thông tin nền (grounding quality).
 
 ---
 
-## Submission Checklist
+## Danh Sách Kiểm Tra Nộp Bài (Submission Checklist)
 
-- [ ] All tests pass: `pytest tests/ -v`
-- [ ] `src/` updated (cá nhân)
-- [ ] Report completed (`report/REPORT.md` — 1 file/sinh viên)
+- [ ] Vượt qua tất cả các bài kiểm thử (tests): `pytest tests/ -v`
+- [ ] Cập nhật thư mục `src/` (cá nhân)
+- [ ] Hoàn thành báo cáo (`report/REPORT.md` — 1 file/sinh viên)
