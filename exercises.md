@@ -83,7 +83,7 @@ Ghi vào bảng:
 | 4 | | | | | |
 | 5 | | | | | |
 
-**Bước 3 — Thiết kế cấu trúc metadata (metadata schema):** Mỗi tài liệu cần `source_url`, `retrieved_at`, `document_version` và ít nhất 2 trường hữu ích cho việc truy xuất (ví dụ: `category`, `customer_role`, `language`, `difficulty`).
+**Bước 3 — Thiết kế cấu trúc metadata (metadata schema):** Mỗi tài liệu cần `source_url`, `retrieved_at`, `document_version` và ít nhất 2 trường hữu ích cho việc truy xuất (ví dụ: `audience`, `department`, `category`, `language`, `difficulty`).
 
 > **Ghi kết quả vào:** Báo cáo — Phần 2 (Lựa chọn tài liệu)
 
