@@ -1,4 +1,6 @@
-# Ngày 7 — Nền Tảng Dữ Liệu: Embedding & Vector Store
+# K3 — Ngày 7: Nền Tảng Dữ Liệu, Embedding & Vector Store
+
+> Bản K3 của Lab 07. Hướng dẫn Codelabs để upload nằm tại `../codelabs/day7-lab-data-foundations.md`; yêu cầu Phase 2 riêng xem [K3_VARIANT.md](K3_VARIANT.md).
 
 ---
 
