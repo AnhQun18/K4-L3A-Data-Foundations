@@ -48,13 +48,17 @@
 
 ### Data Inventory
 
-| # | Tên tài liệu | Nguồn | Số ký tự | Metadata đã gán |
-|---|--------------|-------|----------|-----------------|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 4 | | | | |
-| 5 | | | | |
+| # | Tên tài liệu | Source URL | Ngày lấy / version | Số ký tự | Metadata đã gán |
+|---|--------------|------------|--------------------|----------|-----------------|
+| 1 | | | | | |
+| 2 | | | | | |
+| 3 | | | | | |
+| 4 | | | | | |
+| 5 | | | | | |
+
+**Data governance checklist:**
+- [ ] Corpus chỉ chứa nguồn công khai/được phép dùng và không chứa dữ liệu cá nhân, credential hoặc tài liệu nội bộ.
+- [ ] Mỗi document có `source_url`, `retrieved_at`, `document_version` (hoặc ngày hiệu lực) trong metadata.
 
 ### Metadata Schema
 

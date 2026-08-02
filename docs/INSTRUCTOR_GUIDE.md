@@ -2,6 +2,8 @@
 
 Hướng dẫn này dành cho giảng viên để dẫn dắt buổi lab 4.5 giờ. Lab chia làm 2 pha: **cá nhân** (code) và **nhóm** (so sánh strategy, học từ nhau).
 
+> Chuẩn môi trường: Python **3.11.x**. Phần core chỉ dùng `requirements.txt`; không yêu cầu PyTorch, API key hay GPU.
+
 ---
 
 ## Mục Tiêu Học Tập Cốt Lõi
@@ -18,13 +20,13 @@ Hướng dẫn này dành cho giảng viên để dẫn dắt buổi lab 4.5 gi�
 - Lab này **không bắt buộc** sinh viên cài embedder thật.
 - Luồng mặc định cho lớp học vẫn là `_mock_embed`, nên sinh viên vẫn có thể hoàn thành lab và pass test mà không cần tải model nào.
 - Nếu sinh viên muốn thử embedding thật trên máy cá nhân, package `src` đã hỗ trợ cả:
-  - `all-MiniLM-L6-v2` qua `sentence-transformers`
+  - `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` qua `sentence-transformers` (tùy chọn; phù hợp corpus tiếng Việt)
   - OpenAI embeddings qua package `openai`
 
 Ví dụ local embedder:
 
 ```bash
-pip install sentence-transformers
+pip install -r requirements-local.txt
 python3 - <<'PY'
 from src import LocalEmbedder
 embedder = LocalEmbedder()
@@ -59,7 +61,8 @@ PY
 **Hoạt động (nhóm):**
 - Nhóm chọn domain (FAQ, law, recipes, medical, tech docs, v.v.)
 - Thu thập 5-10 tài liệu, chuyển sang `.txt`/`.md`, đặt vào `data/`
-- Thiết kế metadata schema (ít nhất 2 trường hữu ích)
+- Ghi `source_url`, `retrieved_at`, `document_version` (hoặc ngày hiệu lực); không dùng dữ liệu cá nhân hoặc tài liệu không được phép chia sẻ
+- Thiết kế metadata schema (ít nhất 2 trường retrieval hữu ích)
 
 **Vai trò giảng viên:**
 - Giải thích lab structure: "30 phút chuẩn bị tài liệu nhóm → mỗi người tự code → mỗi người thử strategy riêng → so sánh trong nhóm → demo với lớp"

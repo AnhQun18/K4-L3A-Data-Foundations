@@ -29,6 +29,10 @@ Nhóm cùng chọn một bộ tài liệu và thống nhất 5 benchmark queries
 
 ## Thiết Lập Môi Trường
 
+### Python 3.11 là chuẩn của Lab
+
+Phần bắt buộc được kiểm thử trên **Python 3.11**. Dùng đúng interpreter này khi tạo virtual environment (`py -3.11` trên Windows hoặc `python3.11` trên macOS/Linux); file `.python-version` cũng đã khai báo phiên bản chuẩn.
+
 ```bash
 pip install -r requirements.txt
 pytest tests/ -v          # Phần lớn tests sẽ FAIL (chưa implement)
@@ -46,10 +50,10 @@ Không cần cài gì thêm ngoài:
 pip install -r requirements.txt
 ```
 
-### 2) Tùy chọn: Local embedder `all-MiniLM-L6-v2`
+### 2) Tùy chọn: Local multilingual embedder
 
 ```bash
-pip install sentence-transformers
+pip install -r requirements-local.txt
 python3 - <<'PY'
 from src import LocalEmbedder
 embedder = LocalEmbedder()
@@ -58,8 +62,8 @@ print(len(embedder("embedding smoke test")))
 PY
 ```
 
-- Package `src` hỗ trợ `all-MiniLM-L6-v2` qua `sentence-transformers`.
-- Lần chạy đầu tiên model sẽ được tải về và cache local.
+- Package `src` hỗ trợ `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, phù hợp với corpus tiếng Việt, qua `sentence-transformers`.
+- Lần chạy đầu tiên model và PyTorch dependency sẽ được tải về; đây là phần **tùy chọn**, không cần để làm TODO hoặc chạy test.
 
 ### 3) Tùy chọn: OpenAI embedder
 

@@ -61,7 +61,12 @@ Mỗi nhóm chọn một domain và chuẩn bị bộ tài liệu:
 
 **Step 1 — Chọn domain:** FAQ, SOP, policy, docs kỹ thuật, recipes, luật, y tế, v.v.
 
-**Step 2 — Thu thập 5-10 tài liệu.** Lưu dưới dạng `.txt` hoặc `.md` vào thư mục `data/`.
+**Step 2 — Thu thập 5-10 tài liệu.** Chỉ dùng nguồn công khai hoặc nguồn nhóm có quyền sử dụng; lưu dưới dạng `.txt` hoặc `.md` vào thư mục `data/`.
+
+**Quy tắc dữ liệu bắt buộc:**
+- Không đưa dữ liệu cá nhân, thông tin đăng nhập, hồ sơ nội bộ hoặc nội dung có quyền sử dụng không rõ ràng vào repo.
+- Với mỗi tài liệu, ghi `source_url`, `retrieved_at` (ngày lấy) và `document_version` hoặc ngày hiệu lực nếu nguồn có nêu.
+- Đưa ba trường trên vào metadata khi ingest; chúng giúp kiểm tra độ mới và truy vết câu trả lời.
 
 > **Tip chuyển PDF sang Markdown:**
 > - `pip install marker-pdf` → `marker_single input.pdf output/` (chất lượng cao, giữ cấu trúc)
@@ -70,15 +75,15 @@ Mỗi nhóm chọn một domain và chuẩn bị bộ tài liệu:
 
 Ghi vào bảng:
 
-| # | Tên tài liệu | Nguồn | Số ký tự | Metadata đã gán |
-|---|--------------|-------|----------|-----------------|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 4 | | | | |
-| 5 | | | | |
+| # | Tên tài liệu | Source URL | Ngày lấy / version | Số ký tự | Metadata đã gán |
+|---|--------------|------------|--------------------|----------|-----------------|
+| 1 | | | | | |
+| 2 | | | | | |
+| 3 | | | | | |
+| 4 | | | | | |
+| 5 | | | | | |
 
-**Step 3 — Thiết kế metadata schema:** Mỗi tài liệu cần ít nhất 2 trường metadata hữu ích (e.g., `category`, `date`, `source`, `language`, `difficulty`).
+**Step 3 — Thiết kế metadata schema:** Mỗi tài liệu cần `source_url`, `retrieved_at`, `document_version` và ít nhất 2 trường retrieval hữu ích (e.g., `category`, `audience`, `language`, `difficulty`).
 
 > **Ghi kết quả vào:** Report — Section 2 (Document Selection)
 
