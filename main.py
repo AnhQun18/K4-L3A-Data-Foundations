@@ -9,8 +9,10 @@ from dotenv import load_dotenv
 from src.agent import KnowledgeBaseAgent
 from src.embeddings import (
     EMBEDDING_PROVIDER_ENV,
+    GEMINI_EMBEDDING_MODEL,
     LOCAL_EMBEDDING_MODEL,
     OPENAI_EMBEDDING_MODEL,
+    GeminiEmbedder,
     LocalEmbedder,
     OpenAIEmbedder,
     _mock_embed,
@@ -93,6 +95,11 @@ def run_manual_demo(question: str | None = None, sample_files: list[str] | None 
     elif provider == "openai":
         try:
             embedder = OpenAIEmbedder(model_name=os.getenv("OPENAI_EMBEDDING_MODEL", OPENAI_EMBEDDING_MODEL))
+        except Exception:
+            embedder = _mock_embed
+    elif provider == "gemini":
+        try:
+            embedder = GeminiEmbedder(model_name=os.getenv("GEMINI_EMBEDDING_MODEL", GEMINI_EMBEDDING_MODEL))
         except Exception:
             embedder = _mock_embed
     else:

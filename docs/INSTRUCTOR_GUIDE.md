@@ -22,6 +22,7 @@ Hướng dẫn này dành cho giảng viên để dẫn dắt buổi lab 4 giờ
 - Nếu sinh viên muốn thử embedding thật trên máy cá nhân, gói `src` đã hỗ trợ cả:
   - `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` qua thư viện `sentence-transformers` (tùy chọn; phù hợp kho ngữ liệu tiếng Việt)
   - OpenAI embeddings qua thư viện `openai`
+  - Google Gemini embeddings qua thư viện `google-genai` — **khuyến nghị cho sinh viên không có OpenAI key**, vì Gemini API key lấy miễn phí tại aistudio.google.com, không cần thẻ thanh toán
 
 Ví dụ về trình nhúng cục bộ (local embedder):
 
@@ -48,8 +49,21 @@ print(len(embedder("embedding smoke test")))
 PY
 ```
 
-- Khuyến nghị giảng viên nói rõ ngay từ đầu: **“Local/OpenAI embedder là điểm cộng (bonus) / tùy chọn (optional), không phải điều kiện để hoàn thành lab.”**
-- Khi có sinh viên máy yếu, mạng chậm, không có API key, hoặc không muốn tải mô hình, hãy hướng họ tiếp tục với `_mock_embed` để tránh bị kẹt ở phần thiết lập (setup).
+Ví dụ về Gemini embedder:
+
+```bash
+pip install google-genai
+export GEMINI_API_KEY=your-key-here
+python3 - <<'PY'
+from src import GeminiEmbedder
+embedder = GeminiEmbedder()
+print(embedder._backend_name)
+print(len(embedder("embedding smoke test")))
+PY
+```
+
+- Khuyến nghị giảng viên nói rõ ngay từ đầu: **“Local/OpenAI/Gemini embedder là điểm cộng (bonus) / tùy chọn (optional), không phải điều kiện để hoàn thành lab.”**
+- Khi có sinh viên máy yếu, mạng chậm, không có API key, hoặc không muốn tải mô hình, hãy hướng họ tiếp tục với `_mock_embed` để tránh bị kẹt ở phần thiết lập (setup). Với sinh viên không có OpenAI key nhưng vẫn muốn số liệu benchmark thật (không nhiễu như mock), Gemini là lựa chọn nhanh nhất vì không cần thẻ thanh toán.
 - Bài giải tham khảo (reference solution) dành cho giảng viên / người bảo trì (maintainer): repo master **`Day-07-Lab-Data-Foundations/src/`** đã hoàn thiện toàn bộ TODO — chạy `pytest tests/` cho **42/42** để đối chiếu khi chấm. Không phân phối bản giải này cho sinh viên. Nếu muốn đặt đáp án ngay trong repo này cho tiện so sánh, để vào thư mục `src_w_solution/` (đã có sẵn trong `.gitignore` nên không bị commit nhầm).
 
 ---

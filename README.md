@@ -84,10 +84,31 @@ PY
 export OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
+### 4) Tùy chọn: Trình nhúng Gemini (Google Gemini embedder)
+
+Dùng khi bạn không có OpenAI API key — Gemini API key lấy miễn phí tại [aistudio.google.com](https://aistudio.google.com/apikey), có hạn mức free tier đủ dùng cho lab.
+
+```bash
+pip install google-genai
+export GEMINI_API_KEY=your-key-here
+python3 - <<'PY'
+from src import GeminiEmbedder
+embedder = GeminiEmbedder()
+print(embedder._backend_name)
+print(len(embedder("embedding smoke test")))
+PY
+```
+
+- Mô hình mặc định cho lựa chọn này là `gemini-embedding-001`
+- Có thể đổi mô hình bằng cách:
+```bash
+export GEMINI_EMBEDDING_MODEL=gemini-embedding-001
+```
+
 ### Quy tắc dự phòng (fallback)
 
 - Nếu không chọn gì, lab mặc định dùng `_mock_embed`
-- Nếu chọn `local` hoặc `openai` nhưng thiết lập bị thiếu, mã nguồn sẽ tự động chuyển về dùng `_mock_embed`
+- Nếu chọn `local`, `openai`, hoặc `gemini` nhưng thiết lập bị thiếu, mã nguồn sẽ tự động chuyển về dùng `_mock_embed`
 - Có thể cấu hình qua file `.env` mà không cần chạy lệnh `source .env`
 - File kịch bản `main.py` chạy từ đầu đến cuối và nhập (import) các API công khai từ gói `src`
 
@@ -120,7 +141,7 @@ print(embedder._backend_name, len(embedder("embedding smoke test")))
 PY
 ```
 
-> Lưu ý: `OpenAIEmbedder` cần biến môi trường `OPENAI_API_KEY` hợp lệ hoặc có trong file `.env`.
+> Lưu ý: `OpenAIEmbedder` cần biến môi trường `OPENAI_API_KEY` hợp lệ hoặc có trong file `.env`. Tương tự, `GeminiEmbedder` cần `GEMINI_API_KEY` (hoặc `GOOGLE_API_KEY`) hợp lệ.
 
 ---
 

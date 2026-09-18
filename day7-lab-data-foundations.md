@@ -80,7 +80,7 @@ pip install -r requirements.txt
 
 Nếu PowerShell chặn script, chạy một lần `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
 
-`requirements.txt` chỉ có `pytest` và `python-dotenv`. Không cần `chromadb`, `sentence-transformers` hay `openai` để hoàn thành phần code.
+`requirements.txt` chỉ có `pytest` và `python-dotenv`. Không cần `chromadb`, `sentence-transformers`, `openai` hay `google-genai` để hoàn thành phần code.
 
 ### ✅ CHECKPOINT 1 — 0:20
 
@@ -484,6 +484,22 @@ OPENAI_API_KEY=sk-...
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
-Không chọn gì thì lab dùng mock. Chọn `local` hoặc `openai` mà thiếu thư viện hoặc key thì code tự quay về mock chứ không crash — kiểm dòng `Embedding backend: ...` mà `main.py` in ra để biết mình đang chạy backend nào.
+**Gemini (Google) — không có OpenAI key thì dùng cái này:**
+
+Gemini API key lấy miễn phí tại [aistudio.google.com/apikey](https://aistudio.google.com/apikey), không cần thẻ thanh toán.
+
+```bash
+pip install google-genai
+```
+
+rồi thêm vào `.env`:
+
+```bash
+EMBEDDING_PROVIDER=gemini
+GEMINI_API_KEY=...
+GEMINI_EMBEDDING_MODEL=gemini-embedding-001
+```
+
+Không chọn gì thì lab dùng mock. Chọn `local`, `openai`, hoặc `gemini` mà thiếu thư viện hoặc key thì code tự quay về mock chứ không crash — kiểm dòng `Embedding backend: ...` mà `main.py` in ra để biết mình đang chạy backend nào.
 
 `.env` đã nằm trong `.gitignore`. Kiểm lại repo trên GitHub sau khi push, đừng để lộ key.
