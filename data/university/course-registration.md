@@ -1,5 +1,5 @@
 ---
-doc_id: k3-course-registration
+doc_id: course-registration
 title: Đăng ký học phần
 audience: student            # student | faculty | staff | all
 department: academic-affairs
@@ -9,7 +9,7 @@ retrieved_at: 2026-08-02
 document_version: "2026.1"
 ---
 
-> Khối metadata phía trên là **template mẫu** cho K3 (bắt buộc: `audience` + `source_url` + `retrieved_at` + `document_version`, cùng ít nhất một trường hữu ích khác như `department`). Thay bằng nguồn công khai thật của nhóm trước khi dùng làm benchmark.
+> Khối metadata phía trên là **template mẫu** cho K4 (bắt buộc: `audience` + `source_url` + `retrieved_at` + `document_version`, cùng ít nhất một trường hữu ích khác như `department`). Thay bằng nguồn công khai thật của nhóm trước khi dùng làm benchmark.
 
 # Đăng ký học phần (dữ liệu khởi động)
 
