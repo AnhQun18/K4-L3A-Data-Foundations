@@ -9,6 +9,7 @@ collection: "codelabs"
 published: true
 format: "steps"
 day: "7"
+workMode: "team"
 preparationTipIds: ["huong-dan-cai-vs-code-va-git", "huong-dan-cai-python-va-cau-hinh-python-trong-vs-code", "thiet-lap-venv-voi-pip-va-uv", "huong-dan-tai-bai-lab"]
 level: "intermediate"
 prerequisites: ["Biết class, list comprehension và dict trong Python", "Đã hoàn thành Lab 01 (gọi LLM API)"]
