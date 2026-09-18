@@ -1,175 +1,213 @@
-# Hướng dẫn Giảng viên (Instructor Guide): Lab 7 - Nền tảng Dữ liệu (Data Foundations): Embedding & Vector Store
+# Hướng dẫn Giảng viên/Trợ giảng — Lab 07 K4-L3A (Nền tảng Dữ liệu: Embedding & Vector Store)
 
-Hướng dẫn này dành cho giảng viên để dẫn dắt buổi lab 4 giờ. Lab chia làm 2 giai đoạn (phase): **cá nhân** (lập trình) và **nhóm** (so sánh chiến lược, học hỏi lẫn nhau).
+Run-sheet cho buổi lab 4 giờ, dùng song song với [`../day7-lab-data-foundations.md`](../day7-lab-data-foundations.md) (bản học viên đọc) và [`../K4_VARIANT.md`](../K4_VARIANT.md) (ràng buộc chủ đề). Mốc thời gian dưới đây **tính tương đối từ lúc lớp bắt đầu** (0:00) — lớp bắt đầu lúc nào thì cộng dồn từ đó, không phải giờ tuyệt đối.
 
-> Chuẩn môi trường: Python **3.11.x**. Phần lõi (core) chỉ dùng `requirements.txt`; không yêu cầu PyTorch, API key hay GPU.
-
----
-
-## Mục Tiêu Học Tập Cốt Lõi
-
-1. **Hiểu về Embedding (Embedding Intuition) (G2)**: Hiểu độ tương tự cosine (cosine similarity), dự đoán được điểm tương đồng, nhận ra giới hạn của embedding.
-2. **Các thao tác trên Vector Store (G3)**: Triển khai các chức năng lưu trữ (store) / tìm kiếm (search) / lọc (filter) / xóa (delete); giải thích được khi nào việc lọc bằng metadata (metadata filtering) giúp ích hoặc gây hại.
-3. **Quy trình hoàn chỉnh (Full Pipeline) (G4)**: Triển khai từng bước Document → Chunk → Embed → Store → Query → Inject; so sánh các chiến lược chia nhỏ (chunking strategies).
-4. **Chiến lược dữ liệu (Data Strategy) (G5)**: Chọn dữ liệu, thiết kế metadata, tối ưu chunking — hiểu rằng chất lượng dữ liệu (data quality) quan trọng hơn việc chọn mô hình.
+> Chuẩn môi trường: Python **3.11.x**. Phần lõi (core) chỉ cần `requirements.txt` (`pytest` + `python-dotenv`); không yêu cầu PyTorch, API key hay GPU để hoàn thành 60 điểm code.
 
 ---
 
-## Ghi Chú Cho Giảng Viên: Embedder Thật Là Tùy Chọn
+## 0. Hình thức: nhóm nhưng chấm cá nhân riêng
 
-- Lab này **không bắt buộc** sinh viên cài embedder thật.
-- Luồng mặc định cho lớp học vẫn là trình nhúng giả lập `_mock_embed`, nên sinh viên vẫn có thể hoàn thành lab và vượt qua bài kiểm thử (pass test) mà không cần tải mô hình nào.
-- Nếu sinh viên muốn thử embedding thật trên máy cá nhân, gói `src` đã hỗ trợ cả:
-  - `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` qua thư viện `sentence-transformers` (tùy chọn; phù hợp kho ngữ liệu tiếng Việt)
-  - OpenAI embeddings qua thư viện `openai`
-  - Google Gemini embeddings qua thư viện `google-genai` — **khuyến nghị cho sinh viên không có OpenAI key**, vì Gemini API key lấy miễn phí tại aistudio.google.com, không cần thẻ thanh toán
+Lớp ngồi theo nhóm 3–4 người, nhưng điểm tách bạch:
 
-Ví dụ về trình nhúng cục bộ (local embedder):
+| | Ai làm | Điểm | Nộp ở đâu |
+| --- | --- | --- | --- |
+| Phần cá nhân | Mỗi người tự code toàn bộ `src/`, không chia bài | **60đ** | `report/REPORT_CANHAN.md` (1 file/người) |
+| Phần nhóm | Chung 1 chủ đề dữ liệu + 1 bộ 5 câu hỏi, mỗi người tự thử 1 chiến lược riêng rồi so sánh | **40đ** | `report/REPORT_NHOM.md` (1 file/nhóm) |
 
-```bash
-pip install -r requirements-local.txt
-python3 - <<'PY'
-from src import LocalEmbedder
-embedder = LocalEmbedder()
-print(embedder._backend_name)
-print(len(embedder("embedding smoke test")))
-PY
+**Nói rõ ngay đầu giờ**: "nhóm" ở đây không có nghĩa chia việc code cho nhau — ai cũng phải tự hoàn thiện `src/` và tự chạy benchmark của mình. Nhóm chỉ dùng chung dữ liệu + câu hỏi để có cơ sở so sánh chiến lược.
+
+Chủ đề bắt buộc của **L3A**: dịch vụ/quy định đại học (đăng ký học phần, học phí, học bổng, thư viện, ký túc xá, phúc khảo). Metadata bắt buộc: `audience` (`student`/`faculty`/`staff`/`all`). Lớp song song L3B crawl chủ đề thương mại điện tử (`audience`: `buyer`/`seller`/`both`) — không liên quan tới lớp này, chỉ nêu để tránh nhầm khi so tài liệu giữa 2 lớp.
+
+Nhóm 3 người có 3 vai cố định (vai chỉ là trách nhiệm điều phối thêm, không miễn code):
+
+| Vai | Việc | Hạn |
+| --- | --- | --- |
+| R1 · Data | Chốt chủ đề, chia mỗi người 2–3 URL, kiểm metadata từng file, giữ `sources.csv` | CP2 |
+| R2 · Benchmark | Viết 5 query + gold answer, tự kiểm mỗi gold answer trích được từ tài liệu thật | CP5 |
+| R3 · Strategy | Bảo đảm không ai trùng chiến lược, nhận vai chunk theo heading, chạy baseline cho nhóm | CP5 |
+
+Nhóm 4 người: người thứ 4 làm Report & Demo Lead (gom kết quả, dẫn thuyết trình).
+
+---
+
+## 1. Toàn cảnh timeline
+
+| Giai đoạn | Thời gian | Nội dung | Checkpoint |
+| --- | --- | --- | --- |
+| 1. Dữ liệu | 0:00–1:00 | Setup, chia vai, crawl corpus | CP1 @0:20 · CP2 @1:00 |
+| 2. Code cá nhân | 1:00–2:30 | Warm-up + hoàn thiện `src/` | CP3 @1:45 · CP4 @2:30 |
+| 3. Chiến lược | 2:30–3:00 | 5 benchmark query + chiến lược riêng | CP5 @3:00 |
+| 4. So sánh | 3:00–3:25 | Chạy benchmark, so sánh, phân tích lỗi | CP6 @3:25 |
+| 5. Demo & nộp | 3:25–4:00 | Thuyết trình, hoàn thiện báo cáo, push | CP7 @4:00 |
+
+```mermaid
+flowchart LR
+    A[Setup] --> B[Crawl corpus] --> C[chunking.py] --> D[store.py + agent.py]
+    D --> E[42/42] --> F[Benchmark query] --> G[Chạy & so sánh] --> H[Demo & nộp]
 ```
 
-Ví dụ về OpenAI embedder:
+---
+
+## 2. Chi tiết từng checkpoint
+
+### CP1 — 0:20 · Setup xong
+
+- **Lệnh kiểm tra**: `pytest tests/ -v`
+- **Đạt khi**: đúng **31 failed, 11 passed** trên 42 test (không phải 0 passed — code còn TODO; 11 pass là test cấu trúc project + `FixedSizeChunker` có sẵn).
+- **Bẫy hay gặp**: `ModuleNotFoundError` → venv chưa activate hoặc chưa `pip install -r requirements.txt`.
+- **Ngưỡng can thiệp**: quá 0:25 mà học viên chưa ra đúng baseline này thì phải hỗ trợ ngay — mọi bước sau phụ thuộc bước này.
+
+### CP2 — 1:00 · Đủ dữ liệu, đúng metadata
+
+- **Cách kiểm tra**: script Python có sẵn trong mục CHECKPOINT 2 của lab doc — tự đọc frontmatter mọi file `.md` trong `data/<chủ-đề>/`, in `OK`/`THIEU METADATA` từng dòng, đối chiếu `sources.csv`.
+- **Đạt khi**: **5–10 file**, mỗi file đủ 6 field bắt buộc (`doc_id`, `title`, `source_url`, `retrieved_at`, `document_version`, `audience`), `sources.csv` khớp 1-1, và **`audience` có ≥2 giá trị khác nhau** (student/faculty/staff/all). Chỉ 1 giá trị = coi như fail, vì benchmark ở Giai đoạn 3 sẽ không chứng minh được gì.
+- **Bẫy hay gặp**:
+  - Crawl trúng trang bị `robots.txt` cấm → script báo `disallowed by robots.txt`. Đây **không phải lỗi cần vượt qua** — dạy học viên đổi nguồn, không tìm cách bypass.
+  - Trang render bằng JavaScript → `extracted content is too short`. Đổi nguồn.
+  - Script crash cả lượt với `LookupError: unknown encoding: ...` khi server trả charset lạ (`charset=utf-8,gbk`) — bug đã biết, không nằm trong danh sách bắt lỗi của script. Bỏ URL đó khỏi CSV, chạy tiếp.
+  - Output thô còn dính menu/tin tức chưa làm sạch → chunk sẽ bị nhiễu ở Giai đoạn 4.
+  - Gộp 2 đối tượng khác nhau (`student` + `faculty`) vào 1 file → filter vô dụng dù metadata "đẹp trên giấy". Phải tách file.
+- **Nếu trễ giờ**: ưu tiên đủ 5 file chất lượng hơn cố lấy 10 file ẩu — rubric chấm chất lượng & minh bạch nguồn, không chấm số lượng.
+- Nhắc học viên điền luôn Data Inventory + Metadata Schema vào `REPORT_NHOM.md` mục 1 ngay tại đây, đừng dồn về cuối.
+
+### CP3 — 1:45 · Xong phần chunking
+
+- **Lệnh kiểm tra**: `pytest tests/ -k "Chunker or Similarity or Compare" -v`
+- **Đạt khi**: **23 passed** — 7 test có sẵn (`TestFixedSizeChunker`) + 16 test phần vừa code (`TestSentenceChunker`, `TestRecursiveChunker`, `TestComputeSimilarity`, `TestCompareChunkingStrategies`).
+- **Sai lầm phổ biến**:
+  - `SentenceChunker`: split bằng `[.!?]\s+` làm mất dấu câu, mọi chunk thành câu cụt — phải tách ở vị trí *sau* dấu câu mà vẫn giữ được nó.
+  - `RecursiveChunker`: chỉ viết một chiều (đệ quy xuống sâu) mà quên chiều "gom lên" (nối các mảnh nhỏ liền kề) → sinh hàng trăm chunk vụn 5–10 ký tự.
+  - `RecursiveChunker`: thiếu base case khi `separators=[]` → fail `test_empty_separators_falls_back_gracefully`.
+  - `compute_similarity`: quên xử lý vector độ dài 0 → `ZeroDivisionError` thay vì trả `0.0`.
+  - `ChunkingStrategyComparator.compare`: gõ sai tên key (`fixed_size`/`by_sentences`/`recursive`) → `KeyError`.
+- **Nếu trễ giờ**: ưu tiên `SentenceChunker` (comparator cần nó) + `compute_similarity` (ngắn), để `RecursiveChunker` lại sau — `EmbeddingStore` ở bước tiếp mới là phần nhiều test nhất.
+
+### CP4 — 2:30 · MỐC QUAN TRỌNG NHẤT
+
+- **Lệnh kiểm tra**: `pytest tests/ -v` (phải **42 passed**) + `python main.py "Chunking là gì?"` chạy trọn vẹn không lỗi (dòng `Skipping missing file: data/customer_support_playbook.txt` là bình thường).
+- Đây là mốc nặng nhất: `EmbeddingStore` (5 method — `_make_record`, `_search_records`, `add_documents`, `search`, `get_collection_size`, `search_with_filter`, `delete_document` — 14 test) + `KnowledgeBaseAgent.answer` (dựng context có citation `[1][2][3]`, chống bịa khi context rỗng).
+- **Sai lầm phổ biến**:
+  - Không xoá nhánh ChromaDB (`self._use_chroma = True` gán trước khi khởi tạo client) → nếu máy tình cờ có `chromadb` cài sẵn, cả 14 test sập. Dạy học viên bỏ hẳn nhánh Chroma, chỉ dùng in-memory.
+  - `search` và `search_with_filter` viết hai đường code khác nhau → `test_no_filter_returns_all_candidates` fail. Phải cho cả hai gọi chung `_search_records`.
+  - `search_with_filter` lọc **sau** khi search thay vì **trước** → có thể trả về 0 kết quả dù store vẫn còn tài liệu hợp lệ (k slot bị tài liệu sai chiếm hết).
+  - `delete_document` luôn trả `False` vì record thiếu `metadata['doc_id']` — phải set trong `_make_record`.
+  - `KnowledgeBaseAgent.answer` không inject context vào prompt, hoặc không xử lý store rỗng (phải trả thông báo, không crash, không gọi LLM vô ích).
+- Học viên chụp output `pytest tests/ -v` dán vào `REPORT_CANHAN.md` mục 3 (30 điểm) ngay tại đây.
+- **Nếu ai chưa xong 42/42**: vẫn cho qua Giai đoạn 3 cùng nhóm, fix song song, nhưng không được trễ quá 3:00 (CP5 cần `src/` chạy được).
+
+### CP5 — 3:00 · Có bộ câu hỏi + mỗi người 1 chiến lược
+
+- **Không chấm bằng test** — chấm bằng việc `python bench.py` chạy ra top-3 cho cả 5 câu hỏi.
+- **Đạt khi**: 5 câu hỏi + gold answer đã chốt (ít nhất 1 câu **cần** `metadata_filter={"audience": "student"}` mới trả lời đúng), và mỗi thành viên đã đổi sang **chunker khác nhau** — không ai trùng (gợi ý: 1 người `FixedSizeChunker` có overlap, 1 người `RecursiveChunker`, 1 người chunk theo heading — vai R3 chunk-theo-heading là bắt buộc phải có ít nhất 1 người).
+- **Sai lầm phổ biến trong `bench.py`**:
+  - Nạp cả file làm 1 `Document` (như `main.py`) thay vì chunk trước → retrieval trả về nguyên file, vô dụng.
+  - `doc_id` trong metadata phải trỏ về **tên file gốc**, còn `Document.id` mới là `"file#0"`, `"file#1"`.
+  - Metadata frontmatter không được trải vào mọi chunk → `search_with_filter` không có gì để lọc.
+  - Đổi nhiều hơn 1 dòng khi chuyển chiến lược → so sánh không còn công bằng giữa các thành viên.
+- Chưa cần quan tâm kết quả tốt/xấu ở bước này — CP6 mới xét chất lượng.
+
+### CP6 — 3:25 · Đã so sánh và tìm ra lỗi thật
+
+- Mỗi người có `ket_qua_benchmark.txt` riêng, đã điền bảng top-3 vào `REPORT_CANHAN.md` mục 5.
+- **Điểm dạy quan trọng nhất buổi — chấm 2 mức, không chỉ 1**: cách chấm ngây thơ là kiểm `doc_id` của tài liệu gold có nằm trong top-3 không → **thổi phồng kết quả**. Một chiến lược (đặc biệt chunker theo heading) có thể lấy trọn cả 3 slot top-3 từ đúng tài liệu gold mà **không chunk nào chứa câu trả lời** — vì các section trong cùng tài liệu nói cùng chủ đề nên điểm gần bằng nhau, section nào lọt top-3 gần như ngẫu nhiên. Phải kiểm ở mức nội dung: có chuỗi đặc trưng chứa đáp án trong ngữ cảnh truy xuất được không.
+- Thang điểm tham khảo: 2đ nếu gold ở top-1 và ngữ cảnh chứa đáp án, 1đ nếu gold ở top-2/3, 0đ nếu vắng hoặc ngữ cảnh không trả lời được.
+- **A/B bắt buộc**: chạy câu cần filter 2 lần (có/không `metadata_filter`) trên cả 3 chiến lược. Nếu kết quả giống hệt nhau → câu hỏi chưa thực sự cần filter, phải quay lại sửa.
+- Nhóm phải có ít nhất 1 failure case thật: câu nào hỏng, vì sao, đề xuất sửa — điền vào `REPORT_NHOM.md` mục 2 và 4.
+
+### CP7 — 4:00 · Nộp bài
+
+Checklist xác nhận với học viên trước khi rời phòng:
+
+- [ ] `pytest tests/ -v` → 42 passed
+- [ ] `src/` không còn `raise NotImplementedError`
+- [ ] `data/<chủ-đề>/` có 5–10 tài liệu đủ metadata + `sources.csv` khớp 1-1
+- [ ] Có ít nhất 1 query dùng `metadata_filter={"audience": "student"}`
+- [ ] Ít nhất 1 thành viên chunk theo heading/section
+- [ ] Hai báo cáo điền đủ, output pytest là thật (không phải ảnh chụp giả)
+- [ ] `bench.py` + `ket_qua_benchmark.txt` đã commit
+- [ ] Repo đúng tên quy ước `DAY07-MSSV-HoVaTen`, **không** chứa `.venv/` hay `.env`
+- [ ] Đã nộp link repo vào vlearn
+
+---
+
+## 3. Phần Demo (6–8 phút/nhóm)
+
+Cấu trúc:
+
+1. Chủ đề + bộ tài liệu (1 phút)
+2. Mỗi thành viên tóm tắt chiến lược mình chọn (2 phút)
+3. So sánh + giải thích chiến lược nào thắng, vì sao (3 phút)
+4. Demo trực tiếp 1–2 câu hỏi qua `bench.py` (2 phút)
+5. Hỏi đáp
+
+Yêu cầu: mở sẵn terminal đã chạy được **trước khi** demo — debug trực tiếp trên sân khấu bị trừ điểm. Nhóm chưa tới lượt tranh thủ hoàn thiện báo cáo.
+
+**3 câu hỏi Q&A gợi ý** (dùng nhất quán cho mọi nhóm để so sánh công bằng):
+
+1. "Đổi sang chủ đề khác thì chiến lược của bạn còn dùng được không?" — kiểm tra học viên hiểu chunk theo heading là đặc thù văn bản có cấu trúc, không phải lúc nào cũng tốt nhất.
+2. "Metadata filter giúp ở đâu và làm mất kết quả ở đâu?" — kiểm tra học viên hiểu trade-off precision/recall, không chỉ nói filter luôn tốt.
+3. "Nhóm học được gì từ nhóm khác?" — khuyến khích nghe nhóm bạn thay vì chỉ chờ tới lượt mình.
+
+Có thể đào sâu thêm bằng cách hỏi thẳng vào failure case họ ghi trong báo cáo, xem có phải tự tìm ra hay chỉ chép mẫu.
+
+**Đúc kết cuối buổi**: "Cùng tài liệu, nhưng chiến lược khác nhau → kết quả rất khác nhau. Chấm 2 mức (doc_id đúng vs. nội dung có đáp án) quan trọng hơn chấm 1 mức. Chất lượng dữ liệu thường quan trọng hơn đổi sang mô hình đắt tiền hơn."
+
+---
+
+## 4. Embedder thật là tùy chọn, không phải điều kiện
+
+- Lab **không bắt buộc** cài embedder thật — mặc định dùng `_mock_embed`, học viên vẫn pass 42 test và hoàn thành 60 điểm code mà không cần tải mô hình nào.
+- Nếu học viên muốn số liệu benchmark thật (không nhiễu như mock) ở Giai đoạn 3–4, `src` hỗ trợ 3 lựa chọn:
+  - **Local** (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`, miễn phí, không cần key, phù hợp corpus tiếng Việt): `pip install -r requirements-local.txt`
+  - **OpenAI**: `pip install openai` + `OPENAI_API_KEY`
+  - **Gemini** — khuyến nghị cho học viên không có OpenAI key, vì API key lấy miễn phí tại aistudio.google.com, không cần thẻ thanh toán: `pip install google-genai` + `GEMINI_API_KEY`
+
+Ví dụ nhanh (đổi `LocalEmbedder`/`OpenAIEmbedder`/`GeminiEmbedder` tuỳ backend):
 
 ```bash
-pip install openai
-export OPENAI_API_KEY=your-key-here
-python3 - <<'PY'
-from src import OpenAIEmbedder
-embedder = OpenAIEmbedder()
-print(embedder._backend_name)
-print(len(embedder("embedding smoke test")))
-PY
-```
-
-Ví dụ về Gemini embedder:
-
-```bash
-pip install google-genai
-export GEMINI_API_KEY=your-key-here
 python3 - <<'PY'
 from src import GeminiEmbedder
 embedder = GeminiEmbedder()
-print(embedder._backend_name)
-print(len(embedder("embedding smoke test")))
+print(embedder._backend_name, len(embedder("embedding smoke test")))
 PY
 ```
 
-- Khuyến nghị giảng viên nói rõ ngay từ đầu: **“Local/OpenAI/Gemini embedder là điểm cộng (bonus) / tùy chọn (optional), không phải điều kiện để hoàn thành lab.”**
-- Khi có sinh viên máy yếu, mạng chậm, không có API key, hoặc không muốn tải mô hình, hãy hướng họ tiếp tục với `_mock_embed` để tránh bị kẹt ở phần thiết lập (setup). Với sinh viên không có OpenAI key nhưng vẫn muốn số liệu benchmark thật (không nhiễu như mock), Gemini là lựa chọn nhanh nhất vì không cần thẻ thanh toán.
-- Bài giải tham khảo (reference solution) dành cho giảng viên / người bảo trì (maintainer): repo master **`Day-07-Lab-Data-Foundations/src/`** đã hoàn thiện toàn bộ TODO — chạy `pytest tests/` cho **42/42** để đối chiếu khi chấm. Không phân phối bản giải này cho sinh viên. Nếu muốn đặt đáp án ngay trong repo này cho tiện so sánh, để vào thư mục `src_w_solution/` (đã có sẵn trong `.gitignore` nên không bị commit nhầm).
+- Nói rõ ngay từ đầu: "Local/OpenAI/Gemini embedder là điểm cộng, không phải điều kiện để hoàn thành lab."
+- Học viên máy yếu/mạng chậm/không key → cứ tiếp tục `_mock_embed`, đừng để bị kẹt ở setup.
+- `MockEmbedder` băm MD5 nên **không mã hoá ngữ nghĩa** — nếu buộc phải dùng mock, học viên phải ghi rõ trong báo cáo rằng số liệu bị chi phối bởi mock, và chuyển trọng tâm phân tích sang `count`/`avg_length`/độ mạch lạc chunk (không phụ thuộc embedding).
+
+**Bài giải tham khảo (reference solution)**: dành cho giảng viên/maintainer, không phân phối cho học viên. Nếu muốn đặt đáp án ngay trong repo này để tiện so sánh khi chấm, để vào thư mục `src_w_solution/` (đã có sẵn trong `.gitignore`, không bị commit nhầm).
 
 ---
 
-## Tiến trình (Timeline) & Luồng hoạt động (Flow) (4 giờ)
+## 5. Bảng lỗi thường gặp (tổng hợp nhanh khi đi vòng quanh lớp)
 
-### Giai đoạn 1: Chuẩn bị tài liệu (Document Preparation) (30 phút, 0:00–0:30)
-
-**Hoạt động (nhóm):**
-- Nhóm chọn chủ đề (domain) (FAQ, luật, công thức nấu ăn, y tế, tài liệu kỹ thuật, v.v.)
-- Thu thập 5-10 tài liệu, chuyển sang định dạng `.txt`/`.md`, đặt vào thư mục `data/`
-- Ghi lại `source_url`, `retrieved_at`, `document_version` (hoặc ngày hiệu lực); không dùng dữ liệu cá nhân hoặc tài liệu không được phép chia sẻ
-- Thiết kế cấu trúc metadata (ít nhất 2 trường hữu ích cho truy xuất)
-
-**Vai trò giảng viên:**
-- Giải thích cấu trúc lab: "30 phút chuẩn bị tài liệu nhóm → mỗi người tự code → mỗi người thử chiến lược riêng → so sánh trong nhóm → thuyết trình (demo) với lớp"
-- Gợi ý chủ đề nếu nhóm chưa quyết định được
-- Nhấn mạnh: "Chọn tài liệu có cấu trúc rõ ràng — chất lượng tài liệu quyết định kết quả"
-
-### Giai đoạn 2: Lập trình cá nhân (Individual Coding) (90 phút, 0:30–2:00)
-
-**Khởi động (Warm-up) (10 phút):**
-- Bài 1.1: Độ tương tự Cosine — giải thích bằng ngôn ngữ tự nhiên
-- Bài 1.2: Bài toán Chunking — tính toán số lượng chunk
-
-**Thực hành lập trình (Implementation) (80 phút):**
-- Mỗi sinh viên **tự mình** lập trình tất cả các phần CẦN LÀM (TODO) trong `src/chunking.py`, `src/store.py`, và `src/agent.py`
-- Lớp `Document` và `FixedSizeChunker` đã được lập trình sẵn làm ví dụ
-- Thứ tự gợi ý: `SentenceChunker` → `RecursiveChunker` → `compute_similarity` → `ChunkingStrategyComparator` → `EmbeddingStore` → `KnowledgeBaseAgent`
-
-**Vai trò giảng viên:**
-- **Nhấn mạnh**: "Đây là phần cá nhân — mỗi người tự code"
-- **Điểm kiểm tra 1 (Checkpoint 1) (1:00)**: "Ai đã vượt qua phần chunking (`TestSentenceChunker`, `TestRecursiveChunker`)?" — giải thích lại nếu < 50% lớp làm được
-- **Điểm kiểm tra 2 (Checkpoint 2) (1:30)**: "Ai đã vượt qua TestEmbeddingStore?" — hỗ trợ sửa lỗi (debug) nếu cần
-
-### Giai đoạn 3: Thiết kế chiến lược (Strategy Design) (45 phút, 2:00–2:45)
-
-**Hoạt động:**
-- Nhóm thống nhất **5 câu hỏi đánh giá (benchmark queries) + câu trả lời chuẩn (gold answers)**
-- Mỗi thành viên **chọn chiến lược riêng** (phương pháp chunking, tham số, cấu trúc metadata)
-- Chạy đường cơ sở (baseline) để so sánh, thiết kế chiến lược tùy chỉnh (custom strategy) nếu muốn
-- Đưa (Index) tài liệu vào EmbeddingStore với chiến lược riêng
-
-**Vai trò giảng viên:**
-- Khuyến khích mỗi người thử chiến lược khác nhau: "Một người thử `FixedSizeChunker`, một người thử `RecursiveChunker`, một người thử custom"
-- Kiểm tra các câu hỏi đánh giá: "Các câu hỏi có đủ đa dạng không?"
-- Nhắc nhở: câu trả lời chuẩn phải cụ thể, có thể kiểm chứng (verifiable)
-
-**Điểm kiểm tra (Checkpoint) (2:40):** Mỗi nhóm phải có sẵn 5 câu hỏi đánh giá + câu trả lời chuẩn
-
-### Giai đoạn 4: So Sánh & Thảo Luận Trong Nhóm (30 phút, 2:45–3:15)
-
-**Hoạt động:**
-1. Mỗi thành viên chạy 5 câu hỏi đánh giá với chiến lược riêng (10 phút)
-2. So sánh kết quả trong nhóm (10 phút):
-   - Chiến lược nào tốt nhất? Tại sao?
-   - Có câu hỏi nào chiến lược A thắng nhưng B thua?
-3. Chuẩn bị thuyết trình (demo) (10 phút): chọn những phân tích (insights) hay nhất để chia sẻ
-
-**Vai trò giảng viên:**
-- Đi quanh lớp, đặt câu hỏi: "Chiến lược nào thắng? Các bạn có giải thích được tại sao không?"
-- Thu thập 2-3 phát hiện hay từ các nhóm để sử dụng trong phần thảo luận chung
-
-### Giai đoạn 5: Thuyết trình (Demo) & Thảo Luận Liên Nhóm (45 phút, 3:15–4:00)
-
-**Định dạng thuyết trình (6-8 phút/nhóm):**
-1. Giới thiệu chủ đề (domain) + bộ tài liệu (1 phút)
-2. Mỗi thành viên tóm tắt chiến lược của mình (2 phút)
-3. So sánh: chiến lược nào thắng trên bộ dữ liệu này? Tại sao? (3 phút)
-4. Demo 1-2 câu hỏi trực tiếp (live) (2 phút)
-5. Hỏi đáp (Q&A) từ các nhóm khác + giảng viên (2 phút)
-
-**Câu hỏi gợi ý cho phần thảo luận:**
-- "Nếu chuyển sang chủ đề khác, chiến lược nào vẫn hoạt động tốt?"
-- "Việc lọc bằng Metadata giúp ích ở đâu? Ở đâu nó làm mất đi kết quả tốt?"
-- "Từ kết quả của nhóm bạn, nhóm mình có thể áp dụng được bài học gì?"
-
-**Đúc kết của giảng viên (Wrap-up) (5 phút):**
-- Bài học cốt lõi: "Cùng tài liệu, nhưng chiến lược khác nhau → kết quả rất khác nhau. Hiểu rõ tại sao lại quan trọng hơn là chỉ chạy được code."
-- Nhắc nhở: mỗi nhóm nộp 1 `REPORT_NHOM.md` (chung) + mỗi sinh viên nộp 1 `REPORT_CANHAN.md` (riêng)
-- Kết nối với Ngày 8 (Quy trình RAG hoàn chỉnh)
+| Triệu chứng | Nguyên nhân | Cách sửa |
+| --- | --- | --- |
+| `ModuleNotFoundError: No module named 'src'` | Chạy python từ thư mục khác | `cd` về thư mục gốc repo |
+| Test store fail dù code trông đúng | `_use_chroma = True` nhưng nhánh Chroma chưa cài đặt | Set `False`, chỉ dùng in-memory |
+| `test_no_filter_returns_all_candidates` fail | `search` và `search_with_filter` dùng hai đường code khác nhau | Cho cả hai gọi chung `_search_records` |
+| `delete_document` luôn trả `False` | Record không có `metadata['doc_id']` | Set `doc_id` trong `_make_record` |
+| `test_empty_separators_falls_back_gracefully` fail | Thiếu base case cho `separators == []` | Thêm nhánh cắt cứng theo `chunk_size` |
+| `ZeroDivisionError` trong `compare` | Chia cho `count == 0` khi text rỗng | Chặn trước khi chia |
+| Chunk vụn 5–10 ký tự | `RecursiveChunker` thiếu bước gom | Nối các mảnh nhỏ liền kề tới sát `chunk_size` |
+| `KeyError` khi đọc kết quả comparator | Tên key gõ sai | So từng ký tự với docstring |
+| Crawler báo `disallowed by robots.txt` | Nguồn không cho truy cập tự động | Đổi nguồn — không phải lỗi cần vượt qua |
+| Crawler crash `LookupError: unknown encoding` | Server trả charset không hợp lệ | Bỏ URL đó khỏi CSV, xử lý riêng |
+| `search_with_filter` luôn trả rỗng | Metadata không được trải vào từng chunk | Gộp frontmatter vào metadata khi tạo `Document` |
+| Filter không đổi kết quả gì | Corpus chỉ có một giá trị `audience`, hoặc hai đáp án nằm chung một file | Tách file theo `audience` |
+| Score âm cho chunk đúng | Đang dùng `MockEmbedder` | Bật embedder thật (mục 4) |
+| Tất cả thành viên chọn cùng một chiến lược | Không phân công rõ ở CP2 | Yêu cầu mỗi người thử chiến lược khác nhau — mục tiêu là để so sánh |
+| 5 câu hỏi benchmark quá dễ/giống nhau | Chưa đa dạng dạng hỏi | Yêu cầu: tra số liệu, hỏi điều kiện, hỏi quy trình, liệt kê |
 
 ---
 
-## Sai Lầm Phổ Biến
+## 6. Tiêu chí buổi lab thành công
 
-| Sai lầm | Cách xử lý |
-|---------|------------|
-| **Độ chồng chéo (overlap) > kích thước chunk (chunk_size)** | Hỏi: "bước nhảy (step) = chunk_size - overlap. Nếu overlap >= chunk_size thì bước nhảy là gì?" |
-| **Quên chuẩn hóa (normalize) vector** trong compute_similarity | Chỉ ra công thức: cần chia cho \|\|a\|\| * \|\|b\|\| |
-| **search_with_filter không lọc trước** | Sinh viên tìm kiếm (search) rồi mới lọc (filter) → kết quả sai. Phải lọc trước, rồi mới tìm kiếm |
-| **KnowledgeBaseAgent không đưa ngữ cảnh (inject context) vào** | Kiểm tra: câu lệnh (prompt) có chứa các chunk truy xuất được không? |
-| **Tất cả thành viên chọn cùng một chiến lược** | Yêu cầu mỗi người thử chiến lược khác nhau — mục tiêu là để so sánh |
-| **Câu hỏi đánh giá (Benchmark queries) quá dễ hoặc giống nhau** | Yêu cầu đa dạng: câu hỏi thực tế (factual), yêu cầu thông tin từ nhiều chunk, hoặc phụ thuộc metadata |
-
----
-
-## Tiêu Chí Thành Công
-
-Buổi lab thành công nếu:
-- Mọi sinh viên vượt qua (pass) được ít nhất 70% bài kiểm thử cá nhân
-- Mỗi nhóm có ít nhất 2 chiến lược khác nhau để so sánh
-- Sinh viên giải thích được tại sao chiến lược A tốt hơn B trên dữ liệu cụ thể
-- Buổi thuyết trình có sự thảo luận sôi nổi giữa các nhóm
-- Sinh viên kết nối được: chiến lược dữ liệu ảnh hưởng trực tiếp đến chất lượng truy xuất (retrieval quality)
-
----
-
-*"Chất lượng dữ liệu thường quan trọng hơn việc đổi sang mô hình đắt tiền hơn. Hãy dạy sinh viên nhìn vào dữ liệu trước khi nhìn vào mô hình."*
+- Mọi học viên đạt baseline đúng ở CP1 trước 0:25, không ai bị kẹt ở setup.
+- Đa số học viên đạt 42/42 ở CP4 (mốc quan trọng nhất) trước 2:30, số còn lại fix xong trước 3:00.
+- Mỗi nhóm có ≥2 chiến lược chunking khác nhau để so sánh thật (không ai trùng).
+- Học viên giải thích được **tại sao** chiến lược A tốt hơn B trên dữ liệu cụ thể, phân biệt được "top-3 đúng doc_id" và "top-3 có nội dung trả lời được".
+- Mỗi nhóm nộp được ít nhất 1 failure case thật trong `REPORT_NHOM.md`.
+- Phần thảo luận cuối buổi có sự so sánh sôi nổi giữa các nhóm, không chỉ đọc báo cáo.
