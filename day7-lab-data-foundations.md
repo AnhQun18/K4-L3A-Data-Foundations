@@ -61,7 +61,12 @@ flowchart LR
 
 Repo chuẩn Python 3.11 (xem `.python-version`); 3.10+ vẫn chạy được toàn bộ test.
 
-Fork [repo Lab 07 — L3A](https://github.com/VinUni-AI20k/K4-L3A-Data-Foundations), clone bản fork về máy, mở trong VS Code.
+📦 **Starter Repositories Bài Lab 07** (Fork về làm bài):
+
+🅰️ Lớp L3A: [VinUni-AI20k/K4-L3A-Data-Foundations](https://github.com/VinUni-AI20k/K4-L3A-Data-Foundations)
+🅱️ Lớp L3B: [VinUni-AI20k/K4-L3B-Data-Foundations](https://github.com/VinUni-AI20k/K4-L3B-Data-Foundations)
+
+Fork đúng repo của lớp bạn, clone bản fork về máy, mở trong VS Code.
 
 macOS / Linux:
 
