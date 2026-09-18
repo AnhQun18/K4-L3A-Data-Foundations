@@ -51,11 +51,11 @@ description: "Học viên hoàn thiện TODO trong src/ (chunking, vector store,
 
 `REPORT_CANHAN.md` hỏi bạn code thế nào và kết quả riêng của bạn ra sao — mỗi người một bản. `REPORT_NHOM.md` hỏi nhóm chọn tài liệu gì, ai thử chiến lược nào, chiến lược nào thắng — cả nhóm chung một bản. Điền dần theo từng checkpoint, đừng dồn về cuối.
 
-:::diagram{type="mermaid"}
+```mermaid
 flowchart LR
     A[Setup] --> B[Crawl corpus] --> C[chunking.py] --> D[store.py + agent.py]
     D --> E[42/42] --> F[Benchmark query] --> G[Chạy & so sánh] --> H[Demo & nộp]
-:::
+```
 
 ## 2. 🟦 0:00–0:20 · Setup
 
@@ -63,27 +63,28 @@ Repo chuẩn Python 3.11 (xem `.python-version`); 3.10+ vẫn chạy được to
 
 Fork trước khi clone, đừng clone thẳng repo gốc — bạn cần một remote GitHub thuộc tài khoản của mình để cuối buổi push bài nộp (`K4-DAY07-HoVaTen-MSSV`, xem mục 8). Clone thẳng repo gốc sẽ không có quyền push và phải làm lại từ đầu.
 
-:::repository{url="https://github.com/VinUni-AI20k/K4-L3A-Data-Foundations" label="Starter Lab 07"}
-- [Lớp L3A](https://github.com/VinUni-AI20k/K4-L3A-Data-Foundations)
-- [Lớp L3B](https://github.com/VinUni-AI20k/K4-L3B-Data-Foundations)
-:::
+📦 **Starter Repositories Bài Lab 07** (Fork về làm bài):
+
+🅰️ Lớp L3A: [VinUni-AI20k/K4-L3A-Data-Foundations](https://github.com/VinUni-AI20k/K4-L3A-Data-Foundations)
+🅱️ Lớp L3B: [VinUni-AI20k/K4-L3B-Data-Foundations](https://github.com/VinUni-AI20k/K4-L3B-Data-Foundations)
 
 Fork đúng repo của lớp bạn, clone bản fork về máy, mở trong VS Code.
 
-:::code-tabs
+macOS / Linux:
+
 ```bash
-# macOS / Linux
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Windows (PowerShell):
+
 ```powershell
-# Windows (PowerShell)
 py -3.11 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
-:::
 
 Nếu PowerShell chặn script, chạy một lần `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
 
@@ -139,21 +140,13 @@ Cột bắt buộc trong `data/urls.csv` là `url`. Các cột `doc_id`, `title`
 
 Bốn thứ gần như chắc chắn xảy ra, chuẩn bị tinh thần trước:
 
-:::callout{tone="warning" title="Trang bị robots.txt cấm"}
-Script sẽ báo `disallowed by robots.txt` và bỏ qua. Đây không phải lỗi cần vượt qua — trang mở công khai với người đọc không đồng nghĩa cho phép truy cập tự động. Đổi nguồn khác; nếu bạn đã lỡ tải nó bằng công cụ khác, xoá khỏi corpus.
-:::
+**Trang bị robots.txt cấm.** Script sẽ báo `disallowed by robots.txt` và bỏ qua. Đây không phải lỗi cần vượt qua — **trang mở công khai với người đọc không đồng nghĩa cho phép truy cập tự động**. Đổi nguồn khác. Nếu bạn đã lỡ tải nó bằng công cụ khác, xoá khỏi corpus.
 
-:::callout{tone="warning" title="Trang render bằng JavaScript"}
-Trả về body rỗng, script báo `extracted content is too short`. Đổi nguồn, đừng cố.
-:::
+**Trang render bằng JavaScript** trả về body rỗng, script báo `extracted content is too short`. Đổi nguồn, đừng cố.
 
-:::callout{tone="warning" title="Script crash giữa chừng"}
-Lỗi `LookupError: unknown encoding: ...` — bug đã biết, xảy ra khi server trả charset không hợp lệ (ví dụ `charset=utf-8,gbk`). `LookupError` không nằm trong danh sách bắt lỗi của script nên một URL hỏng làm sập cả lượt chạy. Bỏ URL đó ra khỏi CSV, chạy tiếp, xử lý riêng nó sau.
-:::
+**Script crash giữa chừng** với `LookupError: unknown encoding: ...`. Đây là bug đã biết: server trả charset không hợp lệ (ví dụ `charset=utf-8,gbk`), và `LookupError` không nằm trong danh sách bắt lỗi của script nên một URL hỏng làm sập cả lượt chạy. Bỏ URL đó ra khỏi CSV, chạy tiếp, xử lý riêng nó sau.
 
-:::callout{tone="warning" title="Output thô rất bẩn"}
-Script giữ nguyên menu, "Chuyển đến nội dung", danh sách tin tức không liên quan — một trang 3 KB nội dung có thể ra file 16 KB. `docs/DATA_COLLECTION.md` mục 2 yêu cầu làm sạch trước khi lưu: xoá phần thừa bằng tay, giữ lại đúng điều khoản, con số và mốc thời gian. Đừng chunk trên bản thô — nhiễu sẽ chiếm hết top-k.
-:::
+**Output thô rất bẩn.** Script giữ nguyên menu, "Chuyển đến nội dung", danh sách tin tức không liên quan — một trang 3 KB nội dung có thể ra file 16 KB. `docs/DATA_COLLECTION.md` mục 2 yêu cầu bạn **làm sạch trước khi lưu**. Xoá phần thừa bằng tay, giữ lại đúng điều khoản, con số và mốc thời gian. Đừng chunk trên bản thô — nhiễu sẽ chiếm hết top-k.
 
 Đọc lại từng file sau khi làm sạch. Đừng tin output tự động: công cụ fetch có thể tự dịch nội dung sang tiếng Anh mà bạn không để ý.
 
@@ -281,9 +274,7 @@ Chậm tiến độ thì ưu tiên `SentenceChunker` (comparator cần nó) và 
 
 Làm hai helper trước, bốn method công khai sau. Làm ngược lại bạn sẽ viết lặp cùng một logic bốn lần.
 
-:::callout{tone="warning" title="Về ChromaDB"}
-Bỏ hẳn nhánh Chroma, chỉ dùng in-memory. Không test nào cần nó, `requirements.txt` không cài nó, và code khởi tạo sẵn có một cái bẫy — `self._use_chroma = True` được gán *trước* khi client được tạo. Nếu máy chấm bài tình cờ có `chromadb`, mọi method sẽ rẽ vào nhánh chưa cài đặt và cả 14 test sập.
-:::
+**Về ChromaDB:** bỏ hẳn nhánh Chroma, chỉ dùng in-memory. Không test nào cần nó, `requirements.txt` không cài nó, và code khởi tạo sẵn có một cái bẫy — `self._use_chroma = True` được gán *trước* khi client được tạo. Nếu máy chấm bài tình cờ có `chromadb`, mọi method sẽ rẽ vào nhánh chưa cài đặt và cả 14 test sập.
 
 **`_make_record`** chuẩn hoá một `Document` thành record lưu trong store. Hai chi tiết đáng nghĩ: copy metadata thay vì dùng trực tiếp object của người gọi, và bảo đảm record luôn có khoá `doc_id` trong metadata — `delete_document` phụ thuộc vào nó. Ở CP5 bạn sẽ tạo nhiều `Document` từ một file với id kiểu `"file#0"`, `"file#1"`, nên `doc_id` phải trỏ về **file gốc** chứ không phải id của chunk.
 
@@ -443,15 +434,13 @@ K4-DAY07-NguyenVanAn-21001234/
 
 ### ✅ CHECKPOINT 7 — 4:00
 
-:::checklist{tone="info"}
-- `pytest tests/ -v` → 42 passed, không còn `raise NotImplementedError`
-- `data/<chu-de>/` có 5–10 tài liệu đủ metadata, `sources.csv` khớp 1-1
-- Có ít nhất 1 query dùng `metadata_filter={"audience": "student"}`
-- Ít nhất 1 thành viên chunk theo heading/section
-- Hai báo cáo điền đủ, output pytest là thật
-- `bench.py` + `ket_qua_benchmark.txt` đã commit
-- Repo đúng tên quy ước, không chứa `.venv/`/`.env`, đã nộp link vào vlearn
-:::
+- [ ] `pytest tests/ -v` → 42 passed, không còn `raise NotImplementedError`
+- [ ] `data/<chu-de>/` có 5–10 tài liệu đủ metadata, `sources.csv` khớp 1-1
+- [ ] Có ít nhất 1 query dùng `metadata_filter={"audience": "student"}`
+- [ ] Ít nhất 1 thành viên chunk theo heading/section
+- [ ] Hai báo cáo điền đủ, output pytest là thật
+- [ ] `bench.py` + `ket_qua_benchmark.txt` đã commit
+- [ ] Repo đúng tên quy ước, không chứa `.venv/`/`.env`, đã nộp link vào vlearn
 
 Chọn rating và dán link bài nộp bên dưới, rồi bấm **Xác nhận đã nộp bài**.
 
