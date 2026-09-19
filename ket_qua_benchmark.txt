@@ -1,0 +1,103 @@
+================================================================================
+K4-L3A RETRIEVAL BENCHMARK — LAB 07
+================================================================================
+Thời gian chạy: 2026-09-19 17:20:46
+Thư mục dữ liệu: data/neu-quy-dinh
+Chiến lược chia nhỏ (Chunking): recursive (chunk_size=500, overlap=50)
+Mô hình Embedding: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+
+[1] Đọc và tiền xử lý 7 tài liệu...
+
+Thống kê tài liệu đã nạp:
+#   Tên tài liệu / doc_id                         Audience   Ký tự      Số chunks
+--------------------------------------------------------------------------------
+1   1155-quyche-daotao-daihoc-k63-tr-e1-bb-9f--   student    45445      123
+2   bo-quy-dinh-dao-tao                           student    77095      196
+3   nhung-dieu-sv-dh-ktqd-can-biet--2014          student    171072     448
+4   q-c4-90-368-quy-ch-e1-ba-be--c4-90-c3-80o-t   all        46968      126
+5   quy-dinh-dao-tao-chat-luong-cao               student    81792      216
+6   quy-dinh-ve-dao-tao-theo-chuong-trinh-tien-   student    77682      199
+7   thong-tu-08-2021-tt-bgddt-quy-che-dao-tao-t   all        40640      106
+--------------------------------------------------------------------------------
+Tổng số chunks tạo ra: 1414
+
+[2] Đang tạo embedding và lưu vào EmbeddingStore (có cache)...
+Đã nạp 1414 chunks vào store trong 0.44s.
+
+[3] CHẠY ĐÁNH GIÁ 5 CÂU HỎI BENCHMARK:
+================================================================================
+
+--- Câu hỏi 1: Trường tổ chức cho sinh viên đăng ký học muộn nhất bao lâu trước khi bắt đầu học kỳ? ---
+  * Câu trả lời chuẩn (Gold): Muộn nhất 2 đến 3 tuần trước khi bắt đầu học kỳ (2 tuần theo Quy chế K63, 3 tuần theo CTTT/CLC).
+  * Kết quả Top-3 (với filter={'audience': 'student'}):
+    [1] Score: 0.8596 | Nguồn: quy-dinh-ve-dao-tao-theo-chuong-trinh-tien-tien | ✓ [LIÊN QUAN]
+        Trích đoạn: "3. Thời gian đăng ký: Trường tổ chức cho sinh viên đăng ký học muộn nhất 3 tuần trước thời điểm bắt đầu học kỳ.   4. Phương thức đăng ký   a) Đăng ký ..."
+    [2] Score: 0.8456 | Nguồn: 1155-quyche-daotao-daihoc-k63-tr-e1-bb-9f--c4-91i | ✓ [LIÊN QUAN]
+        Trích đoạn: "1. Thời gian đăng ký học theo thông báo của Trường muộn nhất 2 tuần trước thời điểm bắt đầu học kỳ.  2. Phương thức đăng ký:  a) Đăng ký mặc định: căn..."
+    [3] Score: 0.8255 | Nguồn: quy-dinh-dao-tao-chat-luong-cao | ✓ [LIÊN QUAN]
+        Trích đoạn: "3. Thời gian đăng ký: Trƣờng tổ chức cho sinh viên đăng ký học muộn nhất 3 tuần   trƣớc thời điểm bắt đầu học kỳ.      4. Phƣơng thức đăng ký   a) Đăn..."
+  * Đánh giá chất lượng truy xuất: 2/2 điểm
+  * Phản hồi của Agent: [Agent RAG] Dựa trên quy chế đào tạo: Tổng hợp thông tin từ ngữ cảnh quy định......
+
+  [A/B TESTING] So sánh Lọc Metadata vs Không lọc:
+    Top-3 khi KHÔNG lọc metadata:
+      (1) doc_id: quy-dinh-ve-dao-tao-theo-chuong-trinh-tien-tien (audience=student) | Score: 0.8596
+      (2) doc_id: 1155-quyche-daotao-daihoc-k63-tr-e1-bb-9f--c4-91i (audience=student) | Score: 0.8456
+      (3) doc_id: quy-dinh-dao-tao-chat-luong-cao (audience=student) | Score: 0.8255
+    Top-3 khi CÓ lọc metadata={'audience': 'student'}:
+      (1) doc_id: quy-dinh-ve-dao-tao-theo-chuong-trinh-tien-tien (audience=student) | Score: 0.8596
+      (2) doc_id: 1155-quyche-daotao-daihoc-k63-tr-e1-bb-9f--c4-91i (audience=student) | Score: 0.8456
+      (3) doc_id: quy-dinh-dao-tao-chat-luong-cao (audience=student) | Score: 0.8255
+    => Nhận xét A/B: Bộ lọc metadata giúp loại bỏ hoàn toàn các tài liệu chung (audience='all') và chỉ tập trung vào quy chế đào tạo riêng cho sinh viên.
+
+--- Câu hỏi 2: Học cải thiện điểm được tối đa bao nhiêu tín chỉ trong học kỳ 1? ---
+  * Câu trả lời chuẩn (Gold): Sinh viên chỉ được học cải thiện điểm không quá 8 tín chỉ đối với học kỳ 1 và học kỳ 2; không quá 5 tín chỉ đối với học kỳ hè.
+  * Kết quả Top-3 (với filter={'audience': 'student'}):
+    [1] Score: 0.7974 | Nguồn: nhung-dieu-sv-dh-ktqd-can-biet--2014 | ✓ [LIÊN QUAN]
+        Trích đoạn: "Sinh viên chỉ đƣợc học cải thiện điểm không quá 8 tín chỉ đối với học kỳ 1, học kỳ 2; không quá 5 tín chỉ đối với học kỳ hè. Sinh   45   viên đã hoàn ..."
+    [2] Score: 0.7862 | Nguồn: nhung-dieu-sv-dh-ktqd-can-biet--2014 | ✗ [KHÔNG CHỨA ĐÁP ÁN]
+        Trích đoạn: "6.1. Cảnh báo kết quả học tập đƣợc thực hiện theo từng học kỳ hoặc chuyển xếp năm đào tạo mới, khi:   a) Điểm trung bình chung học kỳ đạt dƣới 0,80 đố..."
+    [3] Score: 0.7799 | Nguồn: quy-dinh-ve-dao-tao-theo-chuong-trinh-tien-tien | ✓ [LIÊN QUAN]
+        Trích đoạn: "Kết quả học tập của sinh viên được đánh giá sau từng học kỳ, năm học, khóa học qua các tiêu chí sau:   1. Số tín chỉ của các học phần mà sinh viên đã ..."
+  * Đánh giá chất lượng truy xuất: 2/2 điểm
+  * Phản hồi của Agent: [Agent RAG] Dựa trên quy chế đào tạo: Sinh viên chỉ đƣợc học cải thiện điểm không quá 8 tín chỉ đối với học kỳ 1, học kỳ 2; không quá 5 tín chỉ đối với học kỳ hè. Sinh  **a.** **_Điều kiện:_**  1. Số tín chỉ của các học phần mà sinh viên đã học trong mỗi học kỳ. Khối lượng học tập đăng k...
+
+--- Câu hỏi 3: Khi không đồng ý với điểm thi thì làm gì? ---
+  * Câu trả lời chuẩn (Gold): Sinh viên làm đơn đề nghị xem lại kết quả bài thi học phần (phúc khảo) gửi Phòng Thanh tra, Khảo thí và Đảm bảo chất lượng giáo dục trong thời hạn quy định.
+  * Kết quả Top-3 (với filter={'audience': 'student'}):
+    [1] Score: 0.6048 | Nguồn: nhung-dieu-sv-dh-ktqd-can-biet--2014 | ✗ [KHÔNG CHỨA ĐÁP ÁN]
+        Trích đoạn: "- Sinh viên bị cảnh cáo trong khi thi, kiểm tra học phần nào thì bị trừ 50% điểm bài thi, kiểm tra  học phần đó.   b) Hình thức đình chỉ thi, kiểm tra..."
+    [2] Score: 0.5971 | Nguồn: quy-dinh-dao-tao-chat-luong-cao | ✗ [KHÔNG CHỨA ĐÁP ÁN]
+        Trích đoạn: "1. Trong quá trình kiểm tra, thi học phần nếu sinh viên vi phạm nội quy thi, sẽ bị xử lý kỷ luật đối với từng học phần và tùy theo mức độ vi phạm sẽ x..."
+    [3] Score: 0.5883 | Nguồn: quy-dinh-dao-tao-chat-luong-cao | ✓ [LIÊN QUAN]
+        Trích đoạn: "- Sinh viên bị đình chỉ thi, kiểm tra trong khi thi, kiểm tra học phần nào thì bài thi,   - kiểm tra học phần đó bị điểm không (0).   Chậm nhất 1 tuần..."
+  * Đánh giá chất lượng truy xuất: 1/2 điểm
+  * Phản hồi của Agent: [Agent RAG] Dựa trên quy chế đào tạo: Tổng hợp thông tin từ ngữ cảnh quy định......
+
+--- Câu hỏi 4: Sinh viên được tuyển chọn vào chương trình Chất lượng cao như thế nào? ---
+  * Câu trả lời chuẩn (Gold): Đã trúng tuyển đại học chính quy, nộp hồ sơ xét tuyển/dự thi vào CT Chất lượng cao và đạt điểm chuẩn; có thể xét tuyển bổ sung đầu năm 2 nếu đạt điều kiện.
+  * Kết quả Top-3 (với filter={'audience': 'student'}):
+    [1] Score: 0.7518 | Nguồn: quy-dinh-dao-tao-chat-luong-cao | ✓ [LIÊN QUAN]
+        Trích đoạn: "a) Sau khi đăng ký dự thi vào Chƣơng trình Chất lƣợng cao nếu đạt số điểm trúng tuyển nhất định _(tùy theo từng năm)_ mới đƣợc nhập học vào Chƣơng trì..."
+    [2] Score: 0.7500 | Nguồn: quy-dinh-dao-tao-chat-luong-cao | ✗ [KHÔNG CHỨA ĐÁP ÁN]
+        Trích đoạn: "d) Cán bộ giảng dạy chịu trách nhiệm về tính chính xác kết quả các điểm thành phần của sinh viên.   e) Trƣởng Bộ môn, Trƣởng Khoa, Viện trƣởng căn cứ ..."
+    [3] Score: 0.7389 | Nguồn: quy-dinh-dao-tao-chat-luong-cao | ✓ [LIÊN QUAN]
+        Trích đoạn: "3. Căn cứ vào tổng chỉ tiêu đào tạo Chƣơng trình Chất lƣợng cao đƣợc giao đầu khoá học, Hiệu trƣởng xét tuyển bổ sung sinh viên vào đầu năm thứ hai ( ..."
+  * Đánh giá chất lượng truy xuất: 2/2 điểm
+  * Phản hồi của Agent: [Agent RAG] Dựa trên quy chế đào tạo: Tổng hợp thông tin từ ngữ cảnh quy định......
+
+--- Câu hỏi 5: Điều kiện để được xét công nhận tốt nghiệp gồm những gì? ---
+  * Câu trả lời chuẩn (Gold): Tích lũy đủ số tín chỉ; CPA toàn khóa từ 2.0 trở lên; đạt chuẩn đầu ra ngoại ngữ, tin học; có chứng chỉ GDQP-AN, GDTC; đạt điểm rèn luyện; không bị truy cứu hình sự hay đình chỉ học tập.
+  * Kết quả Top-3 (với filter={'audience': 'student'}):
+    [1] Score: 0.7957 | Nguồn: 1155-quyche-daotao-daihoc-k63-tr-e1-bb-9f--c4-91i | ✓ [LIÊN QUAN]
+        Trích đoạn: "3. Căn cứ đề nghị của Hội đồng xét tốt nghiệp, Hiệu trưởng ra quyết định công nhận tốt nghiệp và cấp bằng tốt nghiệp trong thời hạn 03 tháng tính từ t..."
+    [2] Score: 0.7827 | Nguồn: quy-dinh-dao-tao-chat-luong-cao | ✗ [KHÔNG CHỨA ĐÁP ÁN]
+        Trích đoạn: "   - đ) Hoàn thành việc học tập chính trị đầu khoá và đƣợc cấp chứng chỉ của Trƣờng;      - e) Hoàn thành nghĩa vụ học phí, lệ phí theo quy định của T..."
+    [3] Score: 0.7714 | Nguồn: nhung-dieu-sv-dh-ktqd-can-biet--2014 | ✓ [LIÊN QUAN]
+        Trích đoạn: "(6) Hiệu trƣởng ký Quyết định công nhận tốt nghiệp và danh sách sinh viên đƣợc cấp bằng tốt nghiệp Đại học Kinh tế quốc dân căn cứ biên bản của Hội đồ..."
+  * Đánh giá chất lượng truy xuất: 2/2 điểm
+  * Phản hồi của Agent: [Agent RAG] Dựa trên quy chế đào tạo: Question: Điều kiện để được xét công nhận tốt nghiệp gồm những gì?...
+
+================================================================================
+TỔNG KẾT ĐIỂM TRUY XUẤT: 9 / 10 điểm (90%)
+================================================================================

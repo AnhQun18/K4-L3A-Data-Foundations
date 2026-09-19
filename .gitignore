@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
+.embedding_cache.json
 
 # Environment
 .env
@@ -17,6 +18,10 @@ __pycache__/
 .omx/
 .venv/
 src_w_solution/
+
+# Scratch / temporary
+test.py
+pytest_output.txt
 
 # Instructor-only notes (chứa gợi ý/đáp án chấm bài, không public cho học viên)
 docs/INSTRUCTOR_GUIDE.md

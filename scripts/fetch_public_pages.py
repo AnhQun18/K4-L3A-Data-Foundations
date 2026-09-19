@@ -125,6 +125,8 @@ def fetch(url: str, user_agent: str, timeout: float) -> tuple[str, str]:
         if content_type not in {"text/html", "text/plain"}:
             raise ValueError(f"unsupported content type: {content_type}")
         charset = response.headers.get_content_charset() or "utf-8"
+        if "," in charset:
+            charset = charset.split(",")[0].strip()
         return response.geturl(), response.read().decode(charset, errors="replace")
 
 

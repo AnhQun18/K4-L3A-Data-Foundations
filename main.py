@@ -20,14 +20,9 @@ from src.embeddings import (
 from src.models import Document
 from src.store import EmbeddingStore
 
-SAMPLE_FILES = [
-    "data/python_intro.txt",
-    "data/vector_store_notes.md",
-    "data/rag_system_design.md",
-    "data/customer_support_playbook.txt",
-    "data/chunking_experiment_report.md",
-    "data/vi_retrieval_notes.md",
-]
+import glob
+
+SAMPLE_FILES = glob.glob("data/neu-quy-dinh/*.md")
 
 
 def load_documents_from_files(file_paths: list[str]) -> list[Document]:
@@ -57,6 +52,8 @@ def load_documents_from_files(file_paths: list[str]) -> list[Document]:
 
     return documents
 
+
+from src.chunking import RecursiveChunker
 
 def demo_llm(prompt: str) -> str:
     """A simple mock LLM for manual RAG testing."""
@@ -108,14 +105,30 @@ def run_manual_demo(question: str | None = None, sample_files: list[str] | None 
     print(f"\nEmbedding backend: {getattr(embedder, '_backend_name', embedder.__class__.__name__)}")
 
     store = EmbeddingStore(collection_name="manual_test_store", embedding_fn=embedder)
-    store.add_documents(docs)
+    
+    chunker = RecursiveChunker(chunk_size=500)
+    all_chunks = []
+    
+    print("\nChunking documents...")
+    for doc in docs:
+        chunks = chunker.chunk(doc.content)
+        for i, chunk_text in enumerate(chunks):
+            # Pass original document's metadata to chunks
+            meta = doc.metadata.copy()
+            meta["doc_id"] = doc.id
+            meta["chunk_index"] = i
+            all_chunks.append(Document(id=f"{doc.id}_chunk_{i}", content=chunk_text, metadata=meta))
+            
+    print(f"Created {len(all_chunks)} chunks from {len(docs)} documents.")
+    
+    store.add_documents(all_chunks)
 
-    print(f"\nStored {store.get_collection_size()} documents in EmbeddingStore")
+    print(f"\nStored {store.get_collection_size()} chunks in EmbeddingStore")
     print("\n=== EmbeddingStore Search Test ===")
     print(f"Query: {query}")
     search_results = store.search(query, top_k=3)
     for index, result in enumerate(search_results, start=1):
-        print(f"{index}. score={result['score']:.3f} source={result['metadata'].get('source')}")
+        print(f"{index}. score={result['score']:.3f} source={result['metadata'].get('source')} (chunk {result['metadata'].get('chunk_index')})")
         print(f"   content preview: {result['content'][:120].replace(chr(10), ' ')}...")
 
     print("\n=== KnowledgeBaseAgent Test ===")
